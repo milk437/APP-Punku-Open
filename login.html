@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Punku Open</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🔐 Acceso Punku Open</h1>
+    <p>Portafolio Docente</p>
+  </header>
+
+  <main>
+    <section style="padding: 2rem;">
+      <input type="text" id="usuario" placeholder="Usuario (Ej. DNI)" /><br/><br/>
+      <input type="password" id="pin" placeholder="PIN (4 dígitos)" maxlength="6" /><br/><br/>
+      <button onclick="iniciarSesion()">Iniciar sesión</button>
+      <!-- Botón "Crear usuario" eliminado para restringir el registro -->
+      <p id="mensaje" style="margin-top: 1rem;"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Punku Open</p>
+  </footer>
+
+  <script src="login.js"></script>
+</body>
+</html>

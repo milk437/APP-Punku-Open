@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Punku Open | Portafolio Docente</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* style.css se mantiene como archivo externo. Este bloque complementa/sobrescribe estilos */
+
+    /* Variables de Color (confirmadas para tema oscuro) */
+    :root {
+      --bg-color: #0d0d0d;
+      --text-color: gold;
+      --header-bg: #111;
+      --sidebar-bg: #1a1a1a; /* Renombrado para consistencia, será el fondo de los botones */
+      --accent-color: gold;
+      --secondary-text-color: #ffd700;
+      --button-bg: gold;
+      --button-text: black;
+      --button-hover-bg: #ffcc00;
+      --input-bg: #1e1e1e; /* Usado para fondo de botones */
+      --input-border: #444;
+      --input-focus-shadow: gold;
+      --table-row-hover-bg: rgba(255, 215, 0, 0.05); 
+      --footer-bg: #1a1a1a;
+      --footer-text: #999;
+      --frase-color: #00BFFF; /* Se mantiene la variable pero ya no se usa directamente para la frase motivacional */
+      --reloj-color: #FF4D4D; /* Se mantiene la variable pero ya no se usa */
+      --fecha-color: #00BFFF; /* Se mantiene la variable pero ya no se usa */
+      --shadow-color-light: rgba(255, 215, 0, 0.1);
+      --shadow-color-strong: rgba(255, 215, 0, 0.25);
+      --shadow-color-hover: rgba(255, 215, 0, 0.5);
+      --border-radius: 8px;
+      --gap: 15px; 
+      --font-family: 'Inter', sans-serif; 
+      --red-vivo: #FF0000; /* Color rojo vivo para "Open" */
+    }
+
+    body {
+      display: flex; /* Flexbox para la estructura principal */
+      flex-direction: column; /* Header, main-content-wrapper, footer apilados */
+      min-height: 100vh;
+      overflow-x: hidden; 
+      background-color: var(--bg-color); 
+      color: var(--text-color);
+      font-family: var(--font-family);
+      margin: 0; 
+      padding: 0; 
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: var(--text-color);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      border-bottom: 2px solid var(--accent-color);
+      box-shadow: 0 4px 15px var(--shadow-color-strong);
+      position: relative; 
+      z-index: 1000;
+      display: flex; 
+      justify-content: space-between; /* Espacia el título y los botones de la esquina */
+      align-items: center;
+      width: 100%; 
+      box-sizing: border-box; 
+    }
+
+    header .main-title-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Alinea el título y subtítulo al centro */
+      justify-content: center;
+      flex-grow: 1; /* Permite que ocupe el espacio central disponible */
+      /* margin-left: 1rem; Removido para centrar */
+    }
+
+    header .main-title {
+      margin: 0;
+      font-size: 3.5em; 
+      color: var(--accent-color);
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    header .main-title .open-red { /* Estilo para la palabra "Open" */
+        color: var(--red-vivo);
+        text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    }
+
+    header .subtitle {
+      margin-top: 5px;
+      font-size: 1.6em;
+      color: var(--secondary-text-color);
+      opacity: 0.9;
+      letter-spacing: 1px;
+    }
+
+    /* Contenedor para los botones de la esquina superior derecha del header */
+    .header-buttons {
+        display: flex;
+        gap: 15px; 
+        align-items: center;
+        margin-right: 1rem; /* Margen para separar del borde derecho */
+    }
+
+    /* Posicionamiento y estilo del botón de cerrar sesión en el header */
+    .header-logout-button {
+      background-color: var(--accent-color);
+      color: var(--button-text);
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: bold;
+      box-shadow: 0 4px 8px var(--shadow-color-light);
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .header-logout-button:hover {
+      background-color: var(--button-hover-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px var(--shadow-color-strong);
+    }
+    
+    /* Estilo del botón de alternar tema en el header */
+    .theme-toggle-button { 
+        background-color: var(--sidebar-bg); 
+        color: var(--accent-color); 
+        border: 1px solid var(--accent-color);
+        border-radius: 50%; 
+        width: 45px; 
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem; 
+        cursor: pointer;
+        box-shadow: 0 4px 8px var(--shadow-color-light);
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .theme-toggle-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px var(--shadow-color-strong);
+        background-color: var(--input-bg); 
+    }
+
+    /* Nueva barra de mensajes debajo del encabezado */
+    #hover-message-bar {
+        width: 100%;
+        background-color: #222; /* Un fondo ligeramente diferente para destacar */
+        color: var(--secondary-text-color);
+        padding: 0.8rem 2rem;
+        text-align: center;
+        font-size: 1.1em;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out; /* Transición más lenta para ocultar */
+        box-sizing: border-box;
+        min-height: 2.5em; /* Asegura un espacio constante */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #hover-message-bar.visible {
+        opacity: 1;
+    }
+
+
+    /* Área de contenido principal (todo el espacio restante después del header y antes del footer) */
+    main {
+      flex-grow: 1; 
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column; /* Apila contenido (si lo hubiera) y botones */
+      align-items: center;
+      justify-content: flex-start; /* Alinea botones al inicio del main */
+      box-sizing: border-box; 
+      max-width: 1200px; /* Ancho máximo para el contenido central */
+      margin: 0 auto; /* Centra el contenido principal */
+    }
+
+    /* Eliminar estilos de bienvenida, reloj y fecha ya que el contenedor se elimina */
+    /* #reloj, #fechaActual, .bienvenida h2, .bienvenida p, #fraseMotivacional no son necesarios */
+    /* .bienvenida {} */
+
+
+    /* Nuevo contenedor para los botones dentro de 'main' */
+    .app-buttons-container {
+      display: flex;
+      flex-wrap: wrap; /* Permite que los botones se envuelvan a la siguiente fila */
+      justify-content: center; /* Centra los botones horizontalmente */
+      gap: 20px; /* Espacio entre los botones */
+      width: 100%;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    .app-buttons-container button {
+      background: var(--input-bg); 
+      color: var(--text-color);
+      border: 1px solid var(--input-border); 
+      flex: 1 1 calc(33% - 40px); /* Aproximadamente 3 botones por fila en escritorio */
+      max-width: 300px; /* Ancho máximo para cada botón */
+      min-width: 250px; /* Ancho mínimo para evitar que se hagan muy pequeños */
+      text-align: center; /* Centra el texto del botón */
+      font-size: 1.1rem; /* Tamaño de fuente ligeramente más grande */
+      padding: 1.2rem 1.5rem; /* Más padding interno */
+      cursor: pointer;
+      display: flex;
+      flex-direction: column; /* Icono y texto apilados */
+      align-items: center;
+      justify-content: center;
+      gap: 8px; /* Espacio entre icono y texto */
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      border-radius: 10px; /* Más redondeado para un look moderno */
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+      box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3); /* Sombra más pronunciada */
+    }
+
+    .app-buttons-container button:hover {
+      background-color: var(--button-hover-bg);
+      transform: translateY(-5px) scale(1.02); /* Efecto de "levantar" y crecer un poco */
+      box-shadow: 0 8px 20px var(--shadow-color-hover); /* Sombra intensa al hover */
+      color: var(--button-text); 
+      border-color: var(--button-hover-bg);
+    }
+    .app-buttons-container button .icon { /* Estilo para los iconos de los botones */
+        font-size: 1.8em;
+        margin-bottom: 5px;
+    }
+
+
+    footer {
+      background-color: var(--footer-bg);
+      color: var(--footer-text);
+      padding: 1.5rem 2rem;
+      font-size: 0.9em;
+      text-align: center;
+      border-top: 1px solid var(--input-border);
+      width: 100%; 
+      box-sizing: border-box;
+    }
+
+
+    /* Media Queries para Responsividad */
+    @media (max-width: 992px) { /* Para tabletas, 2 botones por fila */
+        .app-buttons-container button {
+            flex: 1 1 calc(50% - 40px); /* 2 botones por fila */
+        }
+    }
+
+    @media (max-width: 600px) { /* Para móviles, 1 botón por fila */
+        header {
+            padding: 1rem 1.5rem;
+            flex-direction: column; 
+            align-items: center; 
+        }
+        header .main-title {
+            font-size: 2.5em;
+        }
+        header .subtitle {
+            font-size: 1.2em;
+        }
+        .header-buttons {
+            margin-top: 15px; 
+            margin-right: 0;
+            justify-content: center; 
+            width: 100%;
+        }
+
+        #hover-message-bar {
+            padding: 0.5rem 1rem;
+            font-size: 0.9em;
+            min-height: 2em;
+        }
+
+        main {
+            padding: 1.5rem 1rem;
+        }
+
+        /* .bienvenida se ha eliminado */
+
+        .app-buttons-container {
+            gap: 15px; 
+        }
+        .app-buttons-container button {
+            flex: 1 1 100%; 
+            max-width: none; 
+            min-width: unset; 
+            font-size: 1em;
+            padding: 1rem;
+        }
+        .app-buttons-container button .icon {
+            font-size: 1.5em;
+        }
+        .theme-toggle-button, .header-logout-button {
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+        }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="main-title-container">
+      <h1 class="main-title">Punku <span class="open-red">Open</span></h1>
+      <h2 class="subtitle">Plataforma Digital Interactiva</h2>
+    </div>
+    <div class="header-buttons">
+        <button id="themeToggleButton" class="theme-toggle-button" aria-label="Alternar tema">
+            <span class="icon">☀️</span>
+        </button>
+        <button onclick="cerrarSesion()" class="header-logout-button">🔓 Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Nueva barra de mensajes que aparece al pasar el cursor sobre los botones -->
+  <div id="hover-message-bar"></div>
+
+  <div class="main-content-wrapper">
+    <!-- No hay barras laterales en esta nueva estructura -->
+
+    <main>
+      <span id="usuarioActivo" style="font-size: 0.9rem; margin-bottom: 1rem; display: block; text-align: center;"></span>
+      
+      <!-- Contenedor para todos los botones de navegación -->
+      <div class="app-buttons-container">
+        <!-- TODOS LOS BOTONES EN EL ORDEN ESPECIFICADO -->
+        <button onclick="location.href='index.html'" data-message="Vuelve al inicio de tu plataforma y explora nuevas posibilidades.">
+            <span class="icon">🏠</span> Inicio
+        </button>
+        <button onclick="window.open('https://1drv.ms/f/c/4337d1366c70079a/EpoHcGw20TcggEMIBAEAAAABODNeuA1WJlFwPRBg1hPoxQ?e=L8oCFT', '_blank')" data-message="Centraliza tus recursos y documentos. Organiza, comparte y accede a tu información desde cualquier lugar.">
+            <span class="icon">📂</span> OneDrive
+        </button>
+        <button onclick="location.href='asistencia.html'" data-message="Genera informes detallados y gráficos de asistencia. Analiza tendencias y toma decisiones informadas.">
+            <span class="icon">📊</span> Reporte Asistencia 
+        </button>
+        <button onclick="window.open('https://milk437.github.io/APPPUNKUOPENASISTENCIA', '_blank')" data-message="APP en donde los estudiantes registran su asitencia con un click">
+            <span class="icon">📈</span> Registro Asistencia
+        </button>
+        <button onclick="window.open('https://script.google.com/macros/s/AKfycbyc00s3-NVRTrUAxYymHZBeDxdCCsy6KLcgt78ZYXHwTYbcgHkhcTMwI3WbzlfzLh9k/exec', '_blank')" data-message="Lleva un control organizado de tus datos pedagógicos, calificaciones y el progreso de tus estudiantes.">
+            <span class="icon">📋</span> Registro Auxiliar
+        </button>
+        <button onclick="window.open('https://script.google.com/macros/s/AKfycbxSK63LXw14CYgAd6IIcBNVxwyL_WL2QdkS2no3fwNuob5CnZq8MG76UzDXIGUXR6vo/exec', '_blank')" data-message="Diseña tus planes curriculares anuales de forma ágil y precisa, alineados al CNEB y con el apoyo de la IA.">
+            <span class="icon">🗓️</span> Programaciones Anuales
+        </button>
+        <button onclick="window.open('https://script.google.com/macros/s/AKfycbyFw466JECofWsPEPjcdQlV7QW0j85UHdBWDyGLQ-1pYoBM_HZH9M8XDmHy7QP0CShr/exec', '_blank')" data-message="Crea unidades didácticas innovadoras, centradas en el desarrollo de competencias clave.">
+            <span class="icon">📝</span> Unidades de Aprendizaje
+        </button>
+        <button onclick="window.open('https://script.google.com/macros/s/AKfycbxCxAdD0E-QLk7tD1JKXLI6FeEq9znMj2KAgWNSopRGk8RD3hk8ocHMozp5iH_nu2GZSQ/exec', '_blank')" data-message="Desarrolla proyectos educativos significativos que involucren activamente a tus estudiantes y promuevan el aprendizaje basado en problemas.">
+            <span class="icon">💡</span> Proyectos de Aprendizaje
+        </button>
+        <button onclick="window.open('https://milk437.github.io/PunkuOpen/', '_blank')" data-message="Gestiona y accede a tus sesiones de clase de manera eficiente.">
+            <span class="icon">🚪</span> Sesiones de Aprendizaje
+        </button>
+        <button onclick="location.href='resumen.html'" data-message="Obtén resúmenes concisos y precisos de libros, textos extensos o videos con la ayuda de la inteligencia artificial.">
+            <span class="icon">🧠</span> Generador de Resúmenes
+        </button>
+        <button onclick="window.open('https://script.google.com/macros/s/AKfycbxhv_t44nRkUI6rP6vlcw-hss2lIWjzHHKn9cgcIvOr57dut7LPFOhzY5-7NjxumIJf/exec', '_blank')" data-message="Genera ideas y redacta diversos tipos de textos educativos, desde descripciones hasta contenidos creativos, con el apoyo de la IA.">
+            <span class="icon">✍️</span> Creador de Textos IA
+        <button onclick="window.open('https://milk437.github.io/PUNKUOPEN-DICCIONARIO/', '_blank')" data-message="Tu mejor elección para ampliar tu vocabulario">
+           <span class="icon">📝</span> PunkuOpen Diccionario
+        </button>
+      </div>
+    </main>
+  </div>
+  <footer>
+    <p>&copy; 2025 Punku Open. Milton Ruiz - Todos los Derechos Reservados .</p>
+  </footer>
+  <!-- Tus scripts JavaScript (app.js y el script incrustado para reloj/frases) -->
+  <script src="app.js"></script>
+  <script>
+    // Autenticación y funciones de UI para la página principal
+    const usuario = localStorage.getItem("usuarioActivoPunku");
+    const saludoUsuarioElement = document.getElementById("usuarioActivo"); // Renombrado para claridad
+    const hoverMessageBar = document.getElementById("hover-message-bar"); // Referencia a la nueva barra de mensajes
+
+    if (!usuario) {
+      location.href = "login.html"; 
+    } else {
+      saludoUsuarioElement.innerHTML = `👤 Bienvenido, <strong>${usuario}</strong>.`;
+      // Ya no hay frase motivacional, reloj o fecha en la interfaz principal
+      // cambiarFrase();
+      // setInterval(cambiarFrase, 15000); 
+      // actualizarReloj();
+      // setInterval(actualizarReloj, 1000); 
+      // actualizarFecha(); 
+      setupButtonHoverMessages(); 
+    }
+
+    // Funciones de actualización de reloj/fecha/frase han sido eliminadas ya que no se usan
+
+    function cerrarSesion() {
+      localStorage.removeItem("usuarioActivoPunku");
+      location.href = "login.html";
+    }
+
+    const themeToggleButton = document.getElementById('themeToggleButton');
+    if (themeToggleButton) {
+      themeToggleButton.addEventListener('click', () => {
+        const body = document.body;
+        body.classList.add('changing'); 
+        setTimeout(() => {
+          body.classList.toggle('light-theme');
+          const isLightTheme = body.classList.contains('light-theme');
+          themeToggleButton.querySelector('.icon').textContent = isLightTheme ? '🌙' : '☀️';
+          localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+          body.classList.remove('changing'); 
+        }, 300); 
+      });
+
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggleButton.querySelector('.icon').textContent = '�';
+      } else {
+        themeToggleButton.querySelector('.icon').textContent = '☀️';
+      }
+    }
+
+    /**
+     * Configura los eventos de mouseover y mouseout para los botones de navegación
+     * para mostrar mensajes inspiradores.
+     */
+    function setupButtonHoverMessages() {
+      const navButtons = document.querySelectorAll('.app-buttons-container button');
+      navButtons.forEach(button => {
+        const message = button.getAttribute('data-message');
+        if (message) {
+          button.addEventListener('mouseover', () => {
+            hoverMessageBar.textContent = message;
+            hoverMessageBar.classList.add('visible');
+          });
+          button.addEventListener('mouseout', () => {
+            // Permite que el mensaje permanezca visible un poco más antes de desvanecerse
+            setTimeout(() => {
+                hoverMessageBar.classList.remove('visible');
+                // Limpiar el texto después de la transición para evitar flashes
+                setTimeout(() => {
+                    hoverMessageBar.textContent = '';
+                }, 500); /* Duración de la transición de opacidad */
+            }, 1000); /* Mensaje permanece visible por 5 segundo (5000ms) después de mouseout */
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

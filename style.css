@@ -1,0 +1,473 @@
+/* style.css - Versión PRO para Punku Open (con temas claro/oscuro y botón flotante) */
+
+/* --- Variables de Color para el Tema Oscuro (por defecto) --- */
+:root {
+  --bg-color: #0d0d0d;
+  --text-color: gold;
+  --header-bg: #111;
+  --sidebar-bg: #1a1a1a;
+  --accent-color: gold; /* Color principal de acento */
+  --secondary-text-color: #ffd700; /* Para subtítulos, etiquetas */
+  --reloj-color: #FF4D4D;
+  --fecha-color: #00BFFF;
+  --button-bg: gold;
+  --button-text: black;
+  --button-hover-bg: #ffcc00;
+  --input-bg: #1e1e1e;
+  --input-border: #444;
+  --input-focus-shadow: gold;
+  --table-bg: #1a1a1a;
+  --table-border: #333;
+  --table-header-bg: #222;
+  --table-row-hover-bg: rgba(255, 215, 0, 0.05);
+  --footer-bg: #1a1a1a;
+  --footer-text: #999;
+  --error-color: red;
+  --message-color: gold;
+  --result-border: gold;
+  --result-bg: #1a1a1a;
+  --frase-color: #ffdf70;
+  --shadow-color-light: rgba(255, 215, 0, 0.1);
+  --shadow-color-strong: rgba(255, 215, 0, 0.25);
+  --shadow-color-hover: rgba(255, 215, 0, 0.4);
+  --bienvenida-bg: #1a1a1a;
+  --bienvenida-shadow: rgba(0, 0, 0, 0.2);
+  --theme-toggle-bg: #333; /* Fondo del botón de tema */
+  --theme-toggle-color: gold; /* Color del ícono del botón de tema */
+}
+
+/* --- Variables de Color para el Tema Claro --- */
+body.light-theme {
+  --bg-color: #f0f2f5; /* Fondo claro */
+  --text-color: #333; /* Texto oscuro */
+  --header-bg: #ffffff;
+  --sidebar-bg: #e0e0e0;
+  --accent-color: #007bff; /* Un azul como acento para el tema claro */
+  --secondary-text-color: #666;
+  --reloj-color: #dc3545; /* Rojo más suave */
+  --fecha-color: #17a2b8; /* Cyan más suave */
+  --button-bg: #007bff; /* Botón azul */
+  --button-text: white;
+  --button-hover-bg: #0056b3;
+  --input-bg: #ffffff;
+  --input-border: #ccc;
+  --input-focus-shadow: #007bff;
+  --table-bg: #ffffff;
+  --table-border: #ddd;
+  --table-header-bg: #f8f9fa;
+  --table-row-hover-bg: rgba(0, 123, 255, 0.1);
+  --footer-bg: #e9ecef;
+  --footer-text: #6c757d;
+  --error-color: red; /* Los errores suelen mantener el rojo */
+  --message-color: #007bff;
+  --result-border: #007bff;
+  --result-bg: #ffffff;
+  --frase-color: #555;
+  --shadow-color-light: rgba(0, 0, 0, 0.1);
+  --shadow-color-strong: rgba(0, 0, 0, 0.2);
+  --shadow-color-hover: rgba(0, 0, 0, 0.3);
+  --bienvenida-bg: #ffffff;
+  --bienvenida-shadow: rgba(0, 0, 0, 0.1);
+  --theme-toggle-bg: #f0f0f0; /* Fondo del botón de tema */
+  --theme-toggle-color: #333; /* Color del ícono del botón de tema */
+}
+
+/* --- Aplicación de Variables a Estilos Existentes --- */
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease-in-out; /* Transición suave para el cambio de tema */
+  position: relative; /* Necesario para posicionar el botón de tema */
+}
+
+/* --- Estilos del Encabezado (Header) --- */
+header {
+  padding: 2rem 1rem;
+  background-color: var(--header-bg);
+  border-bottom: 2px solid var(--accent-color);
+  text-align: center;
+  box-shadow: 0 4px 6px var(--shadow-color-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.3rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-color);
+}
+
+header p { /* Para subtítulos en encabezados */
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  color: var(--secondary-text-color);
+  opacity: 0.85;
+}
+
+/* --- Estilos del Reloj y Fecha --- */
+#reloj {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--reloj-color);
+  margin-top: 1rem;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+#fechaActual {
+  font-size: 1.2rem;
+  color: var(--fecha-color);
+  margin-top: 0.3rem;
+  text-align: center;
+}
+
+/* --- Estilos Generales de Botones --- */
+button {
+  background: var(--button-bg);
+  color: var(--button-text);
+  padding: 0.9rem 1.6rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  margin: 0.5rem 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px var(--shadow-color-strong);
+}
+
+button:hover {
+  background: var(--button-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px var(--shadow-color-hover);
+}
+
+/* --- Estilos de Inputs, Selects y Textareas --- */
+input, select, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 6px 1px var(--input-focus-shadow);
+}
+
+label {
+  display: block;
+  text-align: left;
+  font-weight: bold;
+  color: var(--secondary-text-color);
+  margin-top: 1.2rem;
+}
+
+/* --- Estilos de Tabla --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+  color: var(--text-color);
+  background-color: var(--table-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px var(--shadow-color-light);
+}
+
+th, td {
+  border: 1px solid var(--table-border);
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+thead {
+  background-color: var(--table-header-bg);
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+tbody tr:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+/* --- Estilos del Pie de Página (Footer) --- */
+footer {
+  margin-top: auto;
+  padding: 1rem;
+  font-size: 0.9rem;
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  text-align: center;
+  border-top: 1px solid var(--table-border);
+}
+
+/* Áreas de mensajes */
+#error {
+  color: var(--error-color);
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+#mensaje {
+  color: var(--message-color);
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+#resultado {
+  background-color: var(--result-bg);
+  border: 1px solid var(--result-border);
+  padding: 1rem;
+  border-radius: 10px;
+  color: var(--text-color);
+  line-height: 1.6;
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+  text-align: left;
+  margin-top: 2rem;
+}
+
+/* Animación general */
+.content, .menu, .sidebar, main, section, .menu button {
+  animation: fadeIn 0.5s ease-in-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Imprimir limpio */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  header, footer, .sidebar, .botones-exportacion, .theme-toggle-button { /* Añadido .theme-toggle-button */
+    display: none !important;
+  }
+
+  table, th, td {
+    color: black;
+    border: 1px solid #000;
+  }
+
+  #resultado {
+    border-color: black;
+    color: black;
+  }
+}
+
+/* --- Estilos del Sidebar (desde index.html, con ajustes) --- */
+.sidebar {
+  width: 240px;
+  background-color: var(--sidebar-bg);
+  color: var(--text-color);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0 6px var(--shadow-color-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar h2 {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sidebar button {
+  background: none; /* Los botones del sidebar son transparentes por defecto */
+  color: var(--text-color); /* Color de texto del tema */
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  padding: 1rem 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.3s ease, transform 0.2s ease;
+  border-radius: 6px;
+}
+
+.sidebar button:hover {
+  background-color: var(--table-row-hover-bg); /* Un hover sutil para los botones del sidebar */
+  transform: translateX(5px);
+}
+
+/* --- Área de Contenido Principal (Content) --- */
+.content {
+  margin-left: 260px; /* Espacio para el sidebar fijo */
+  padding: 3rem 2rem;
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bienvenida {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: var(--bienvenida-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--bienvenida-shadow);
+}
+
+.bienvenida h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.bienvenida p {
+  font-size: 1.1rem;
+  margin-top: 0.3rem;
+}
+
+#fraseMotivacional {
+  font-style: italic;
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--frase-color);
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.visible {
+  opacity: 1;
+}
+
+/* --- Botón de Cerrar Sesión (Mejorado para Visibilidad) --- */
+.sidebar button.logout {
+  background-color: var(--accent-color); /* Siempre el color de acento del tema */
+  color: var(--button-text); /* Texto negro/blanco para contraste */
+  border: none;
+  padding: 0.9rem 1.6rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px var(--shadow-color-strong);
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.sidebar button.logout:hover {
+  background-color: var(--button-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px var(--shadow-color-hover);
+}
+
+/* --- Nuevo estilo para el botón de alternar tema (flotante) --- */
+.theme-toggle-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Botón circular */
+  background-color: var(--theme-toggle-bg);
+  color: var(--theme-toggle-color);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem; /* Tamaño del ícono */
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.theme-toggle-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación para el ícono */
+.theme-toggle-button span {
+  display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.theme-toggle-button.changing span {
+  transform: rotateY(180deg);
+  opacity: 0;
+}
+
+
+/* --- Media Queries para Responsividad (ajustadas para variables) --- */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1rem 0.5rem;
+    box-shadow: none;
+    border-bottom: 2px solid var(--accent-color);
+    position: static;
+  }
+
+  .sidebar h2 {
+    display: none;
+  }
+
+  .content {
+    margin: 1rem;
+    padding: 1rem;
+    margin-left: 0;
+    align-items: center;
+  }
+
+  .sidebar button {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .sidebar button.logout {
+    position: static;
+    margin: 0.5rem 0;
+    width: auto;
+  }
+
+  .theme-toggle-button {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+    left: auto; /* Asegura que se mantenga a la derecha en móviles */
+    width: 45px;
+    height: 45px;
+    font-size: 1.6rem;
+  }
+}

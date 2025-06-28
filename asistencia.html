@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Punku Open | Asistencia Visual</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .tabla-asistencia {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .tabla-asistencia th, .tabla-asistencia td {
+      border: 1px solid #555;
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    .tabla-asistencia th {
+      background-color: #222;
+      color: gold;
+    }
+
+    .tabla-asistencia tr:hover {
+      background-color: #333;
+      cursor: pointer;
+    }
+
+    .detalle {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid gold;
+      border-radius: 8px;
+      background-color: #1a1a1a;
+      display: none;
+    }
+
+    canvas {
+      margin-top: 2rem;
+      max-width: 500px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Punku Open</h1>
+    <p>📋 Visualización de Asistencia</p>
+    <div style="margin-top: 0.5rem;">
+      <span id="usuarioActivo" style="font-size: 0.9rem; color: #ccc;"></span><br />
+      <button onclick="cerrarSesion()" style="margin-top: 0.5rem;">🔓 Cerrar sesión</button>
+      <button onclick="location.href='index.html'" style="margin-top: 0.5rem;">🏠 Menú principal</button>
+    </div>
+  </header>
+
+  <main style="padding: 1rem;">
+    <div class="filtros">
+      <label>Grado:
+        <select id="filtroGrado">
+          <option value="">Todos</option>
+        </select>
+      </label>
+      <label>Sección:
+        <select id="filtroSeccion">
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <button onclick="cargarDatos()">🔁 Cargar datos</button>
+    </div>
+
+    <div id="tablaContainer"></div>
+
+    <div id="detalleEstudiante" class="detalle">
+      <h2 id="nombreDetalle">📌 Detalle del estudiante</h2>
+      <div id="detalleContenido"></div>
+      <button onclick="descargarPDF()">📄 Descargar PDF</button>
+      <button onclick="enviarWhatsapp()">📲 Enviar WhatsApp</button>
+    </div>
+
+    <canvas id="graficoAsistencia"></canvas>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Punku Open</p>
+  </footer>
+
+  <!-- Librerías necesarias -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="asistencia.js"></script>
+
+  <script>
+    const usuario = localStorage.getItem("usuarioActivoPunku");
+    if (!usuario) {
+      location.href = "login.html";
+    } else {
+      document.getElementById("usuarioActivo").textContent = `👤 Usuario: ${usuario}`;
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem("usuarioActivoPunku");
+      location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
