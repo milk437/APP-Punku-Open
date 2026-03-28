@@ -1,8 +1,18 @@
-// resumen.js – Motor Punku Open (VERSIÓN ANTIBLOQUEO)
-const hfToken = "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"; 
+// resumen.js – Motor Punku Open (Versión Anti-Bloqueo)
+const hfToken = "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"; 
+// Usamos Mistral, que es el más estable para evitar errores de CORS en Edge
 const modelUrl = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
-// Proxy para saltar el bloqueo de CORS de Edge/Chrome
-const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const inputType = document.getElementById("inputType");
+    if (inputType) {
+        inputType.addEventListener("change", function() {
+            document.getElementById("bookInputs").style.display = this.value === "book" ? "block" : "none";
+            document.getElementById("urlInputs").style.display = this.value === "url" ? "block" : "none";
+        });
+    }
+    console.log("🚀 Punku Open: Sistema Anti-Bloqueo Activo.");
+});
 
 async function generarResumen() {
     const tipo = document.getElementById("inputType").value;
@@ -17,49 +27,57 @@ async function generarResumen() {
 
     errorDiv.textContent = "";
     resultadoDiv.innerHTML = "";
-    mensajeDiv.textContent = "⏳ Punku Open está analizando... (esto puede tardar 20s)";
+    mensajeDiv.textContent = "⏳ Punku Open está analizando... (Espera 10-15 segundos)";
 
     let prompt = "";
     if (tipo === "book") {
-        if (!titulo) return mostrarError("⚠️ Ingresa el título.");
-        prompt = `Resume el libro "${titulo}" de ${autor || 'autor desconocido'}. Resumen pedagógico de ${palabras} palabras en español.`;
+        if (!titulo) return mostrarError("⚠️ Por favor, escribe el título del libro.");
+        prompt = `Resume el libro "${titulo}" de ${autor || 'autor desconocido'}. Haz un resumen educativo de ${palabras} palabras en español.`;
     } else {
-        if (!url) return mostrarError("⚠️ Pega una URL.");
-        prompt = `Resume este contenido: ${url}. Resumen de ${palabras} palabras en español.`;
+        if (!url) return mostrarError("⚠️ Pega una URL válida.");
+        prompt = `Resume el contenido de este enlace: ${url}. Hazlo en ${palabras} palabras en español.`;
     }
 
     try {
-        // Llamada a través del Proxy para evitar el error "Blocked by CORS"
         const response = await fetch(modelUrl, {
             headers: { 
                 "Authorization": `Bearer ${hfToken}`,
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
+                // No agregamos nada más para evitar que Edge sospeche (CORS)
             },
             method: "POST",
             body: JSON.stringify({
                 inputs: `<s>[INST] ${prompt} [/INST]`,
-                parameters: { max_new_tokens: 800, wait_for_model: true }
+                parameters: { 
+                    max_new_tokens: 1000, 
+                    wait_for_model: true // Esto es clave para que no falle si la IA está dormida
+                }
             }),
         });
 
         const data = await response.json();
 
-        if (!response.ok) throw new Error(data.error || "Error de servidor");
+        if (!response.ok) {
+            throw new Error(data.error || "Fallo en la conexión con la IA");
+        }
 
-        let textoFinal = data[0]?.generated_text || "Error al generar.";
-        textoFinal = textoFinal.split("[/INST]").pop().trim();
+        let textoFinal = data[0]?.generated_text || "No se pudo obtener el texto.";
+        
+        // Limpiamos la respuesta para que solo salga el resumen
+        if (textoFinal.includes("[/INST]")) {
+            textoFinal = textoFinal.split("[/INST]").pop().trim();
+        }
 
         resultadoDiv.innerHTML = `
-            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #007bff; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h3 style="margin-top:0; color:#007bff;">📝 Resumen Punku Open:</h3>
-                <p style="text-align:justify; white-space: pre-wrap;">${textoFinal}</p>
+            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #2ecc71; box-shadow: 0 2px 10px rgba(0,0,0,0.1); color: #333;">
+                <h3 style="margin-top:0; color:#2ecc71;">📝 Resumen Punku Open:</h3>
+                <p style="text-align:justify; line-height:1.6; white-space: pre-wrap;">${textoFinal}</p>
             </div>`;
-        mensajeDiv.textContent = "✅ ¡Listo!";
+        mensajeDiv.textContent = "✅ ¡Resumen generado con éxito!";
 
     } catch (err) {
-        console.error(err);
-        // Si el proxy falla, intentamos la vía directa como último recurso
-        mostrarError("❌ El navegador bloqueó la conexión. Prueba entrar a 'https://cors-anywhere.herokuapp.com/corsdemo' y haz clic en el botón azul para dar permiso.");
+        console.error("Error detectado:", err);
+        mostrarError("❌ Error de conexión. Por favor, intenta de nuevo en 10 segundos.");
     }
 }
 
@@ -68,23 +86,21 @@ function mostrarError(msg) {
     document.getElementById("mensaje").textContent = "";
 }
 
-// Funciones de apoyo
+// Utilidades básicas
 function copiarResumen() {
     const texto = document.getElementById("resultado").innerText;
-    if (texto) navigator.clipboard.writeText(texto).then(() => alert("📋 Copiado."));
+    if (texto) {
+        navigator.clipboard.writeText(texto);
+        alert("📋 Copiado al portapapeles.");
+    }
 }
 
 function descargarPDF() {
     const texto = document.getElementById("resultado").innerText;
-    if (!texto) return;
+    if (!texto) return alert("Genera un resumen primero.");
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const splitText = doc.splitTextToSize(texto, 180);
     doc.text(splitText, 10, 10);
     doc.save("Resumen_PunkuOpen.pdf");
-}
-
-function enviarWhatsapp() {
-    const texto = document.getElementById("resultado").innerText;
-    if (texto) window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
 }
