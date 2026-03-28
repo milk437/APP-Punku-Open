@@ -1,89 +1,72 @@
-// resumen.js – Generador de Resúmenes Punku Open PRO
-const apiKey = "AIzaSyCqmEe_Bc3W3gqTTV5FGxg8Y1wLkvTbuaY"; 
+// resumen.js – Motor Punku Open con Hugging Face Llama 3
+const hfToken = "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"; 
+const modelUrl = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct";
 
-// URL CORREGIDA: Volvemos a v1beta pero con la ruta completa y correcta
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-// --- CONFIGURACIÓN DE INTERFAZ ---
-document.addEventListener("DOMContentLoaded", () => {
-    // Aseguramos que el evento se asigne solo si el elemento existe
-    const inputType = document.getElementById("inputType");
-    if (inputType) {
-        inputType.addEventListener("change", actualizarInputs);
-    }
-    console.log("✅ Punku Open: Sistema de resúmenes listo.");
+// Control de visibilidad de los inputs
+document.getElementById("inputType").addEventListener("change", function() {
+    const tipo = this.value;
+    document.getElementById("bookInputs").style.display = tipo === "book" ? "block" : "none";
+    document.getElementById("urlInputs").style.display = (tipo === "url" || tipo === "video") ? "block" : "none";
 });
 
-function actualizarInputs() {
-    const tipo = document.getElementById("inputType").value;
-    const bookInputs = document.getElementById("bookInputs");
-    const urlInputs = document.getElementById("urlInputs");
-
-    if (bookInputs) bookInputs.style.display = tipo === "book" ? "block" : "none";
-    if (urlInputs) urlInputs.style.display = (tipo === "url" || tipo === "video") ? "block" : "none";
-}
-
-// --- FUNCIÓN PRINCIPAL: GENERAR RESUMEN ---
 async function generarResumen() {
     const tipo = document.getElementById("inputType").value;
     const titulo = document.getElementById("inputTitle")?.value.trim();
     const autor = document.getElementById("inputAuthor")?.value.trim();
     const url = document.getElementById("inputUrl")?.value.trim();
-    const palabras = document.getElementById("targetWordCount")?.value;
+    const palabras = document.getElementById("targetWordCount").value;
 
     const errorDiv = document.getElementById("error");
     const resultadoDiv = document.getElementById("resultado");
     const mensajeDiv = document.getElementById("mensaje");
 
-    if (errorDiv) errorDiv.textContent = "";
-    if (resultadoDiv) resultadoDiv.innerHTML = "";
-    if (mensajeDiv) mensajeDiv.textContent = "⏳ Punku Open está analizando el contenido...";
+    errorDiv.textContent = "";
+    resultadoDiv.innerHTML = "";
+    mensajeDiv.textContent = "⏳ Punku Open está analizando el contenido...";
 
     let prompt = "";
-    let longitud = palabras === "libre" ? "una extensión libre y detallada" : `aproximadamente ${palabras} palabras`;
-
     if (tipo === "book") {
-        if (!titulo) return mostrarError("⚠️ Indica el título del libro.");
-        prompt = `Resume el libro "${titulo}"${autor ? ` de ${autor}` : ""}. El resumen debe ser de ${longitud} y con enfoque pedagógico.`;
+        if (!titulo) return mostrarError("⚠️ Por favor, ingresa el título del libro.");
+        prompt = `Eres un experto literario. Resume el libro "${titulo}" de ${autor || 'autor desconocido'}. El resumen debe ser de aproximadamente ${palabras} palabras, en español y estructurado para estudiantes de secundaria.`;
     } else {
-        if (!url) return mostrarError("⚠️ Pega una URL válida.");
-        prompt = `Analiza y resume el contenido de este enlace: ${url}. El resumen debe tener ${longitud}.`;
+        if (!url) return mostrarError("⚠️ Por favor, pega una URL válida.");
+        prompt = `Resume el contenido de este enlace: ${url}. Hazlo en aproximadamente ${palabras} palabras y en español.`;
     }
 
     try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(modelUrl, {
+            headers: { 
+                Authorization: `Bearer ${hfToken}`,
+                "Content-Type": "application/json"
+            },
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: prompt }]
-                }]
-            })
+                inputs: `<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n${prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`,
+                parameters: { max_new_tokens: 1000, temperature: 0.6 }
+            }),
         });
 
         const data = await response.json();
-
+        
         if (data.error) {
-            console.error("Error de Google:", data.error.message);
-            // Si el error dice 'API key not found', es que la llave se quemó
-            return mostrarError("❌ Error de Google: " + data.error.message);
+            if (data.error.includes("currently loading")) {
+                return mensajeDiv.textContent = "⏳ El modelo se está cargando en el servidor. Reintenta en 15 segundos.";
+            }
+            throw new Error(data.error);
         }
 
-        const textoIA = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const textoFinal = data[0]?.generated_text || "No se pudo generar el resumen.";
 
-        if (textoIA) {
-            resultadoDiv.innerHTML = `
-                <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; color: #333;">
-                    <h3 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">📝 Resumen:</h3>
-                    <p style="margin-top: 15px; line-height: 1.6; text-align: justify;">${textoIA.replace(/\n/g, "<br>")}</p>
-                </div>`;
-            mensajeDiv.textContent = "✅ Resumen generado.";
-        } else {
-            mostrarError("❌ No se recibió respuesta de la IA.");
-        }
+        resultadoDiv.innerHTML = `
+            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin-top:0;">📝 Resumen Generado:</h3>
+                <p>${textoFinal.replace(/\n/g, "<br>")}</p>
+            </div>`;
+        mensajeDiv.textContent = "✅ Resumen completado con éxito.";
+
     } catch (err) {
-        console.error("Fallo de red:", err);
-        mostrarError("❌ Error de conexión. Revisa la consola.");
+        console.error(err);
+        mostrarError("❌ Hubo un fallo en la conexión con la IA. Intenta de nuevo.");
     }
 }
 
@@ -92,4 +75,41 @@ function mostrarError(msg) {
     document.getElementById("mensaje").textContent = "";
 }
 
-// Las funciones de PDF, Word, etc., se mantienen igual...
+// --- UTILIDADES ---
+function copiarResumen() {
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return alert("Nada que copiar.");
+    navigator.clipboard.writeText(texto).then(() => alert("📋 Copiado al portapapeles."));
+}
+
+function descargarPDF() {
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return alert("Primero genera un resumen.");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const splitText = doc.splitTextToSize(texto, 180);
+    doc.text(splitText, 10, 10);
+    doc.save("Resumen_PunkuOpen.pdf");
+}
+
+function descargarWord() {
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return;
+    const blob = new Blob(['\ufeff' + texto], { type: 'application/msword' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "Resumen_PunkuOpen.doc";
+    link.click();
+}
+
+function enviarWhatsapp() {
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return;
+    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
+}
+
+function enviarCorreo() {
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return;
+    window.location.href = `mailto:?subject=Resumen%20Punku%20Open&body=${encodeURIComponent(texto)}`;
+}
