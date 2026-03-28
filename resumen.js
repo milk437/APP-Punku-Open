@@ -2,11 +2,17 @@
 const hfToken = "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"; 
 const modelUrl = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct";
 
-// Control de visibilidad de los inputs
-document.getElementById("inputType").addEventListener("change", function() {
-    const tipo = this.value;
-    document.getElementById("bookInputs").style.display = tipo === "book" ? "block" : "none";
-    document.getElementById("urlInputs").style.display = (tipo === "url" || tipo === "video") ? "block" : "none";
+// Configuración inicial al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+    const inputType = document.getElementById("inputType");
+    if (inputType) {
+        inputType.addEventListener("change", function() {
+            const tipo = this.value;
+            document.getElementById("bookInputs").style.display = tipo === "book" ? "block" : "none";
+            document.getElementById("urlInputs").style.display = (tipo === "url" || tipo === "video") ? "block" : "none";
+        });
+    }
+    console.log("🚀 Punku Open: Motor Llama-3 (Hugging Face) Activo.");
 });
 
 async function generarResumen() {
@@ -22,15 +28,15 @@ async function generarResumen() {
 
     errorDiv.textContent = "";
     resultadoDiv.innerHTML = "";
-    mensajeDiv.textContent = "⏳ Punku Open está analizando el contenido...";
+    mensajeDiv.textContent = "⏳ Analizando contenido...";
 
     let prompt = "";
     if (tipo === "book") {
-        if (!titulo) return mostrarError("⚠️ Por favor, ingresa el título del libro.");
-        prompt = `Eres un experto literario. Resume el libro "${titulo}" de ${autor || 'autor desconocido'}. El resumen debe ser de aproximadamente ${palabras} palabras, en español y estructurado para estudiantes de secundaria.`;
+        if (!titulo) return mostrarError("⚠️ Ingresa el título del libro.");
+        prompt = `Resume el libro "${titulo}" de ${autor || 'autor desconocido'}. Resumen de ${palabras} palabras en español para nivel secundaria.`;
     } else {
-        if (!url) return mostrarError("⚠️ Por favor, pega una URL válida.");
-        prompt = `Resume el contenido de este enlace: ${url}. Hazlo en aproximadamente ${palabras} palabras y en español.`;
+        if (!url) return mostrarError("⚠️ Pega una URL válida.");
+        prompt = `Resume este contenido: ${url}. Resumen de ${palabras} palabras en español.`;
     }
 
     try {
@@ -50,23 +56,23 @@ async function generarResumen() {
         
         if (data.error) {
             if (data.error.includes("currently loading")) {
-                return mensajeDiv.textContent = "⏳ El modelo se está cargando en el servidor. Reintenta en 15 segundos.";
+                return mensajeDiv.textContent = "⏳ El servidor se está encendiendo... reintenta en 10 segundos.";
             }
             throw new Error(data.error);
         }
 
-        const textoFinal = data[0]?.generated_text || "No se pudo generar el resumen.";
+        const textoFinal = data[0]?.generated_text || "Error al generar.";
 
         resultadoDiv.innerHTML = `
             <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #007bff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h3 style="margin-top:0;">📝 Resumen Generado:</h3>
-                <p>${textoFinal.replace(/\n/g, "<br>")}</p>
+                <h3 style="margin-top:0; color:#007bff;">📝 Resumen Punku Open:</h3>
+                <p style="text-align:justify;">${textoFinal.replace(/\n/g, "<br>")}</p>
             </div>`;
-        mensajeDiv.textContent = "✅ Resumen completado con éxito.";
+        mensajeDiv.textContent = "✅ ¡Listo!";
 
     } catch (err) {
-        console.error(err);
-        mostrarError("❌ Hubo un fallo en la conexión con la IA. Intenta de nuevo.");
+        console.error("Fallo:", err);
+        mostrarError("❌ Error de conexión con la IA.");
     }
 }
 
@@ -75,16 +81,15 @@ function mostrarError(msg) {
     document.getElementById("mensaje").textContent = "";
 }
 
-// --- UTILIDADES ---
+// Funciones de utilidad (PDF, Copiar, etc)
 function copiarResumen() {
     const texto = document.getElementById("resultado").innerText;
-    if (!texto) return alert("Nada que copiar.");
-    navigator.clipboard.writeText(texto).then(() => alert("📋 Copiado al portapapeles."));
+    if (texto) navigator.clipboard.writeText(texto).then(() => alert("📋 Copiado."));
 }
 
 function descargarPDF() {
     const texto = document.getElementById("resultado").innerText;
-    if (!texto) return alert("Primero genera un resumen.");
+    if (!texto) return alert("No hay resumen.");
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const splitText = doc.splitTextToSize(texto, 180);
@@ -104,12 +109,5 @@ function descargarWord() {
 
 function enviarWhatsapp() {
     const texto = document.getElementById("resultado").innerText;
-    if (!texto) return;
-    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
-}
-
-function enviarCorreo() {
-    const texto = document.getElementById("resultado").innerText;
-    if (!texto) return;
-    window.location.href = `mailto:?subject=Resumen%20Punku%20Open&body=${encodeURIComponent(texto)}`;
+    if (texto) window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
 }
