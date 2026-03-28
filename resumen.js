@@ -1,9 +1,9 @@
-// resumen.js – Generador de Resúmenes y Rúbricas Punku Open PRO
-
-const apiKey = "AIzaSyCqmEe_Bc3W3gqTTV5FGxg8Y1wLkvTbuaY"; // 🔑 Clave Gemini 1.5 Flash
+// resumen.js – Generador de Resúmenes Punku Open PRO
+const apiKey = "AIzaSyCqmEe_Bc3W3gqTTV5FGxg8Y1wLkvTbuaY"; 
 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
 // --- CONFIGURACIÓN DE INTERFAZ ---
+// Usamos el ID 'inputType' que está en tu HTML
 if (document.getElementById("inputType")) {
     document.getElementById("inputType").addEventListener("change", actualizarInputs);
 }
@@ -12,118 +12,113 @@ function actualizarInputs() {
     const tipo = document.getElementById("inputType").value;
     const bookInputs = document.getElementById("bookInputs");
     const urlInputs = document.getElementById("urlInputs");
-    const studentInputs = document.getElementById("studentInputs"); // Para la rúbrica
 
+    // Ajuste según los IDs de tu HTML
     if (bookInputs) bookInputs.style.display = tipo === "book" ? "block" : "none";
     if (urlInputs) urlInputs.style.display = (tipo === "url" || tipo === "video") ? "block" : "none";
-    if (studentInputs) studentInputs.style.display = tipo === "rubrica" ? "block" : "none";
 }
 
 // --- FUNCIÓN PRINCIPAL: GENERAR RESUMEN ---
-function generarResumen() {
+async function generarResumen() {
     const tipo = document.getElementById("inputType").value;
     const titulo = document.getElementById("inputTitle")?.value.trim();
     const autor = document.getElementById("inputAuthor")?.value.trim();
     const url = document.getElementById("inputUrl")?.value.trim();
     const palabras = document.getElementById("targetWordCount")?.value;
-    const textoEstudiante = document.getElementById("inputEstudiante")?.value.trim();
 
     const errorDiv = document.getElementById("error");
     const resultado = document.getElementById("resultado");
     const mensaje = document.getElementById("mensaje");
 
-    errorDiv.textContent = "";
-    resultado.innerHTML = "";
-    mensaje.textContent = "⏳ Procesando con IA...";
+    // Limpiar estados previos
+    if (errorDiv) errorDiv.textContent = "";
+    if (resultado) resultado.innerHTML = "";
+    if (mensaje) mensaje.textContent = "⏳ Punku Open está generando tu resumen...";
 
     let prompt = "";
-    let longitud = palabras === "libre" ? "Proporciona un resumen claro y completo." : `en aproximadamente ${palabras} palabras.`;
+    let longitud = palabras === "libre" ? "extensión libre" : `aproximadamente ${palabras} palabras`;
 
-    // Selección de Lógica según Tipo
+    // Lógica de Prompt
     if (tipo === "book") {
-        if (!titulo) return mostrarError("⚠️ Ingresa el título del libro.");
-        prompt = `Resume el libro "${titulo}"${autor ? ` de ${autor}` : ""}, ${longitud}`;
-    } 
-    else if (tipo === "url" || tipo === "video") {
-        if (!url) return mostrarError("⚠️ Ingresa una URL válida.");
-        prompt = `Resume el contenido de esta URL: ${url}. Si no puedes acceder, explica de qué trata según el enlace, ${longitud}`;
-    } 
-    else if (tipo === "rubrica") {
-        if (!textoEstudiante) return mostrarError("⚠️ Pega el texto del estudiante.");
-        prompt = `Actúa como docente experto de secundaria en Perú. Evalúa el siguiente texto del alumno: "${textoEstudiante}". 
-        Usa los niveles AD, A, B y C del CNEB. Devuelve en HTML: Nivel de logro, fortalezas, debilidades y retroalimentación pedagógica.`;
+        if (!titulo) return mostrarError("⚠️ Por favor, ingresa el título del libro.");
+        prompt = `Resume el libro titulado "${titulo}"${autor ? ` escrito por ${autor}` : ""}. El resumen debe ser de ${longitud} y tener un enfoque pedagógico.`;
+    } else {
+        if (!url) return mostrarError("⚠️ Por favor, pega una URL o enlace de video válido.");
+        prompt = `Analiza y resume el contenido principal del siguiente enlace: ${url}. Que el resumen sea de ${longitud}.`;
     }
 
-    // LLAMADA A LA API
-    fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error("Error en la clave API o límites alcanzados.");
-        return response.json();
-    })
-    .then(data => {
+    try {
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                contents: [{ parts: [{ text: prompt }] }] 
+            })
+        });
+
+        if (!response.ok) throw new Error("API Key inválida o límite excedido");
+
+        const data = await response.json();
         const textoIA = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
         if (textoIA) {
             resultado.innerHTML = `
-                <h3>${tipo === 'rubrica' ? '📊 Evaluación de Rúbrica' : '📝 Resumen Generado'}:</h3>
-                <div style="line-height: 1.6; text-align: justify;">${textoIA.replace(/\n/g, "<br>")}</div>`;
-            mensaje.textContent = "✅ Proceso completado.";
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
+                    <h3 style="color: #2c3e50;">📝 Resumen Generado:</h3>
+                    <p>${textoIA.replace(/\n/g, "<br>")}</p>
+                </div>`;
+            mensaje.textContent = "✅ Resumen listo.";
         } else {
-            mostrarError("❌ La IA no pudo procesar la solicitud.");
+            mostrarError("❌ La IA no pudo procesar este contenido.");
         }
-    })
-    .catch(err => {
+    } catch (err) {
         console.error(err);
-        mostrarError("❌ Error de conexión. Verifica tu API Key.");
-    });
+        mostrarError("❌ Error crítico: Verifica tu conexión o API Key.");
+    }
 }
 
 // --- UTILIDADES ---
 function mostrarError(msg) {
-    document.getElementById("error").textContent = msg;
+    const errorDiv = document.getElementById("error");
+    if (errorDiv) errorDiv.textContent = msg;
     document.getElementById("mensaje").textContent = "";
-    document.getElementById("resultado").innerHTML = "";
 }
 
-function obtenerTextoPlano() {
-    return document.getElementById("resultado").innerText.trim();
+function copiarResumen() {
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return alert("Primero genera un resumen.");
+    navigator.clipboard.writeText(texto).then(() => alert("📋 Copiado al portapapeles"));
 }
 
-// --- EXPORTACIÓN DE ARCHIVOS ---
+// --- EXPORTACIÓN ---
 function descargarPDF() {
-    const texto = obtenerTextoPlano();
-    if (!texto) return alert("No hay contenido para descargar.");
-    const blob = new Blob([texto], { type: "application/pdf" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "PunkuOpen_Documento.pdf";
-    link.click();
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return alert("No hay contenido.");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const splitText = doc.splitTextToSize(texto, 180);
+    doc.text(splitText, 10, 10);
+    doc.save("Resumen_PunkuOpen.pdf");
 }
 
 function descargarWord() {
-    const texto = obtenerTextoPlano();
-    if (!texto) return alert("No hay contenido para descargar.");
-    const blob = new Blob([texto], { type: "application/msword" });
+    const texto = document.getElementById("resultado").innerText;
+    if (!texto) return;
+    const blob = new Blob(['\ufeff' + texto], { type: 'application/msword' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "PunkuOpen_Documento.doc";
+    link.download = "Resumen_PunkuOpen.doc";
     link.click();
 }
 
-// --- REDES SOCIALES ---
 function enviarWhatsapp() {
-    const texto = obtenerTextoPlano();
+    const texto = document.getElementById("resultado").innerText;
     if (!texto) return;
-    const body = encodeURIComponent("Resultado Punku Open:\n\n" + texto);
-    window.open(`https://wa.me/?text=${body}`, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent("Resumen de Punku Open:\n\n" + texto)}`, "_blank");
 }
 
 function enviarCorreo() {
-    const texto = obtenerTextoPlano();
+    const texto = document.getElementById("resultado").innerText;
     if (!texto) return;
-    const body = encodeURIComponent(texto);
-    window.location.href = `mailto:?subject=Resultado%20Punku%20Open&body=${body}`;
+    window.location.href = `mailto:?subject=Resumen%20Punku%20Open&body=${encodeURIComponent(texto)}`;
 }
