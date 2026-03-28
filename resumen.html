@@ -3,73 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Resúmenes | Punku Open</title>
+  <title>Resúmenes | Punku Open</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <button id="themeToggleButton" class="theme-toggle-button" aria-label="Alternar tema">
-    <span class="icon">☀️</span>
-  </button>
-
-  <header>
+  <header style="text-align:center; padding: 20px;">
     <h1>Punku Open</h1>
-    <p>🧠 Generador de Resúmenes PRO (Llama 3)</p>
-    <div style="margin-top: 0.5rem;">
-      <span id="usuarioActivo" style="font-size: 0.9rem;"></span><br />
-      <button onclick="cerrarSesion()" style="margin-top: 0.5rem;">🔓 Cerrar sesión</button><br />
-      <button onclick="location.href='index.html'" style="margin-top: 0.5rem;">🏠 Menú principal</button>
-    </div>
+    <p>🧠 Generador de Resúmenes Llama 3</p>
+    <button onclick="location.href='index.html'">🏠 Menú principal</button>
   </header>
 
   <main style="padding: 2rem; max-width: 800px; margin: auto;">
-    <section>
-      <label>Tipo de entrada:
-        <select id="inputType">
-          <option value="book">📘 Libro / Obra</option>
-          <option value="url">🌐 Enlace Web</option>
-          <option value="video">🎬 Video</option>
-        </select>
-      </label><br/><br/>
+    <label>Tipo:
+      <select id="inputType">
+        <option value="book">📘 Libro</option>
+        <option value="url">🌐 Enlace Web</option>
+      </select>
+    </label><br/><br/>
 
-      <div id="bookInputs">
-        <input type="text" id="inputTitle" placeholder="Título del libro" style="width: 100%;"><br/><br/>
-        <input type="text" id="inputAuthor" placeholder="Autor (opcional)" style="width: 100%;">
-      </div>
+    <div id="bookInputs">
+      <input type="text" id="inputTitle" placeholder="Título" style="width:100%;"><br/><br/>
+      <input type="text" id="inputAuthor" placeholder="Autor" style="width:100%;">
+    </div>
 
-      <div id="urlInputs" style="display: none;">
-        <input type="url" id="inputUrl" placeholder="Pega aquí la URL (web o video)" style="width: 100%;">
-      </div>
-      <br/>
+    <div id="urlInputs" style="display: none;">
+      <input type="url" id="inputUrl" placeholder="https://..." style="width:100%;">
+    </div>
+    <br/>
 
-      <label>Longitud del resumen:
-        <select id="targetWordCount">
-          <option value="150">150 palabras</option>
-          <option value="300" selected>300 palabras</option>
-          <option value="600">600 palabras</option>
-          <option value="libre">Libre</option>
-        </select>
-      </label><br/><br/>
+    <label>Extensión:
+      <select id="targetWordCount">
+        <option value="150">150 palabras</option>
+        <option value="300" selected>300 palabras</option>
+        <option value="600">600 palabras</option>
+      </select>
+    </label><br/><br/>
 
-      <button onclick="generarResumen()">✨ Generar Resumen</button>
-      <button onclick="copiarResumen()">📋 Copiar</button>
-      <button onclick="descargarPDF()">⬇️ PDF</button>
-      <button onclick="descargarWord()">📝 Word</button>
-      <button onclick="enviarCorreo()">📧 Correo</button>
-      <button onclick="enviarWhatsapp()">🟢 WhatsApp</button><br/><br/>
+    <button onclick="generarResumen()">✨ Generar</button>
+    <button onclick="copiarResumen()">📋 Copiar</button>
+    <button onclick="descargarPDF()">⬇️ PDF</button>
+    <button onclick="descargarWord()">📝 Word</button>
+    <button onclick="enviarWhatsapp()">🟢 WhatsApp</button>
 
-      <p id="mensaje" style="font-weight: bold; color: #007bff;"></p>
-      <p id="error" style="font-weight: bold; color: #dc3545;"></p>
-    </section>
+    <p id="mensaje"></p>
+    <p id="error"></p>
 
-    <section id="resultado" style="margin-top: 2rem; line-height: 1.6; text-align: justify;"></section>
+    <section id="resultado" style="margin-top:20px;"></section>
   </main>
 
-  <footer>
-    <p>&copy; 2026 Punku Open</p>
-  </footer>
-
   <script src="resumen.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>
