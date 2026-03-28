@@ -14,7 +14,7 @@
 
   <header>
     <h1>Punku Open</h1>
-    <p>🧠 Generador de Resúmenes</p>
+    <p>🧠 Generador de Resúmenes (Llama 3)</p>
     <div style="margin-top: 0.5rem;">
       <span id="usuarioActivo" style="font-size: 0.9rem;"></span><br />
       <button onclick="cerrarSesion()" style="margin-top: 0.5rem;">🔓 Cerrar sesión</button><br />
@@ -24,7 +24,7 @@
 
   <main style="padding: 2rem; max-width: 800px; margin: auto;">
     <section>
-      <label>Tipo de entrada:
+      <label><b>Tipo de entrada:</b>
         <select id="inputType">
           <option value="book">📘 Libro / Obra</option>
           <option value="url">🌐 Enlace Web</option>
@@ -40,11 +40,10 @@
       <div id="urlInputs" style="display: none;">
         <input type="url" id="inputUrl" placeholder="Pega aquí la URL (web o video)" style="width: 100%;">
       </div>
-      <div id="videoInputs" style="display: none;">
-        </div>
+      
       <br/>
 
-      <label>Longitud del resumen:
+      <label><b>Longitud del resumen:</b>
         <select id="targetWordCount">
           <option value="100">100 palabras</option>
           <option value="200" selected>200 palabras</option>
@@ -53,22 +52,25 @@
         </select>
       </label><br/><br/>
 
-      <button onclick="generarResumen()">✨ Generar Resumen</button>
-      <button onclick="copiarResumen()">📋 Copiar Resumen</button>
-      <button onclick="descargarPDF()">⬇️ PDF</button>
-      <button onclick="descargarWord()">📝 Word</button>
-      <button onclick="enviarCorreo()">📧 Correo</button>
-      <button onclick="enviarWhatsapp()">🟢 WhatsApp</button><br/><br/>
+      <div class="button-container">
+          <button onclick="generarResumen()" style="background-color: #007bff; color: white; padding: 10px 20px; font-weight: bold;">✨ Generar Resumen</button>
+          <button onclick="copiarResumen()">📋 Copiar</button>
+          <button onclick="descargarPDF()">⬇️ PDF</button>
+          <button onclick="descargarWord()">📝 Word</button>
+          <button onclick="enviarCorreo()">📧 Correo</button>
+          <button onclick="enviarWhatsapp()" style="background-color: #25d366; color: white;">🟢 WhatsApp</button>
+      </div>
 
-      <p id="mensaje"></p>
-      <p id="error"></p>
+      <br/>
+      <p id="mensaje" style="color: #007bff; font-weight: bold;"></p>
+      <p id="error" style="color: #d93025; font-weight: bold;"></p>
     </section>
 
-    <section id="resultado"></section>
+    <section id="resultado" style="margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem;"></section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Punku Open</p>
+    <p>&copy; 2026 Punku Open | Educación Digital</p>
   </footer>
 
   <script src="resumen.js"></script>
