@@ -49,7 +49,7 @@ function generarResumen() {
   }
 
   // API Gemini (coloca tu clave)
-  const apiKey = AIzaSyAX6MkVumi5M4nSZ0totXbqphtiswSaS4s"; // 🔑 Inserta tu clave API de Gemini
+  const apiKey = "AIzaSyAX6MkVumi5M4nSZ0totXbqphtiswSaS4s"; // 🔑 Inserta tu clave API de Gemini
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   fetch(apiUrl, {
