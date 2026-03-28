@@ -3,62 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resúmenes | Punku Open</title>
+  <title>Generador de Resúmenes | Punku Open</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0;">
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0;">
 
   <header style="background: #2c3e50; color: white; padding: 20px; text-align: center;">
     <h1 style="margin: 0;">Punku Open</h1>
-    <p style="margin: 5px 0;">🧠 Generador de Resúmenes (Llama 3)</p>
-    <button onclick="location.href='index.html'" style="padding: 8px 15px; cursor: pointer; border-radius: 5px; border: none;">🏠 Volver al Inicio</button>
+    <p style="margin: 5px 0;">🧠 Generador de Resúmenes Inteligente</p>
+    <button onclick="location.href='index.html'" style="margin-top: 10px; cursor: pointer; padding: 5px 15px;">🏠 Inicio</button>
   </header>
 
-  <main style="max-width: 700px; margin: 30px auto; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+  <main style="max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
     
-    <div style="margin-bottom: 20px;">
-      <label><b>¿Qué quieres resumir?</b></label><br/>
-      <select id="inputType" style="width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc;">
+    <section>
+      <label><b>Tipo de entrada:</b></label><br/>
+      <select id="inputType" style="width: 100%; padding: 10px; margin: 10px 0;">
         <option value="book">📘 Libro / Obra Literaria</option>
-        <option value="url">🌐 Enlace Web o Artículo</option>
+        <option value="url">🌐 Enlace Web / Artículo</option>
       </select>
-    </div>
 
-    <div id="bookInputs">
-      <input type="text" id="inputTitle" placeholder="Título del libro" style="width: 97%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc;">
-      <input type="text" id="inputAuthor" placeholder="Autor (opcional)" style="width: 97%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-    </div>
+      <div id="bookInputs">
+        <input type="text" id="inputTitle" placeholder="Título del libro (Ej: Tradiciones Peruanas)" style="width: 97%; padding: 10px; margin-bottom: 10px;">
+        <input type="text" id="inputAuthor" placeholder="Autor (Ej: Ricardo Palma)" style="width: 97%; padding: 10px;">
+      </div>
 
-    <div id="urlInputs" style="display: none;">
-      <input type="url" id="inputUrl" placeholder="https://ejemplo.com/articulo" style="width: 97%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-    </div>
+      <div id="urlInputs" style="display: none;">
+        <input type="url" id="inputUrl" placeholder="Pega aquí la URL (https://...)" style="width: 97%; padding: 10px;">
+      </div>
 
-    <div style="margin-top: 20px;">
-      <label><b>Extensión aproximada:</b></label><br/>
-      <select id="targetWordCount" style="width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc;">
-        <option value="150">150 palabras (Corto)</option>
-        <option value="300" selected>300 palabras (Estándar)</option>
-        <option value="600">600 palabras (Detallado)</option>
+      <br/>
+      <label><b>Longitud del resumen:</b></label><br/>
+      <select id="targetWordCount" style="width: 100%; padding: 10px; margin: 10px 0;">
+        <option value="150">Corto (150 palabras)</option>
+        <option value="350" selected>Estándar (350 palabras)</option>
+        <option value="600">Detallado (600 palabras)</option>
       </select>
-    </div>
 
-    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-      <button onclick="generarResumen()" style="background: #007bff; color: white; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">✨ Generar Resumen</button>
-      <button onclick="copiarResumen()" style="background: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;">📋 Copiar</button>
-      <button onclick="descargarPDF()" style="background: #e74c3c; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;">⬇️ PDF</button>
-      <button onclick="descargarWord()" style="background: #2980b9; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;">📝 Word</button>
-      <button onclick="enviarWhatsapp()" style="background: #25d366; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;">🟢 WhatsApp</button>
-    </div>
+      <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+        <button onclick="generarResumen()" style="background: #007bff; color: white; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">✨ Generar Resumen</button>
+        <button onclick="copiarResumen()" style="background: #6c757d; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer;">📋 Copiar</button>
+        <button onclick="descargarPDF()" style="background: #e74c3c; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer;">⬇️ PDF</button>
+        <button onclick="enviarWhatsapp()" style="background: #25d366; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer;">🟢 WhatsApp</button>
+      </div>
 
-    <p id="mensaje" style="text-align: center; color: #007bff; font-weight: bold; margin-top: 20px;"></p>
-    <p id="error" style="text-align: center; color: #d63031; font-weight: bold; margin-top: 20px;"></p>
+      <p id="mensaje" style="text-align: center; color: #007bff; font-weight: bold; margin-top: 20px;"></p>
+      <p id="error" style="text-align: center; color: #dc3545; font-weight: bold;"></p>
+    </section>
 
-    <div id="resultado" style="margin-top: 25px;"></div>
+    <div id="resultado" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;"></div>
   </main>
 
-  <footer style="text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.9rem;">
-    &copy; 2026 Punku Open | Educación Digital
+  <footer style="text-align: center; padding: 20px; color: #888; font-size: 0.8rem;">
+    &copy; 2026 Punku Open | Desarrollado para el Magisterio Peruano
   </footer>
 
   <script src="resumen.js"></script>
