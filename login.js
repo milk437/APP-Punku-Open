@@ -6,7 +6,7 @@ let intentosRestantes = 3;
 // *** CONFIGURACIÓN DEL USUARIO FIJO ***
 // Por favor, cambia estos valores por el usuario y PIN que deseas usar.
 const FIXED_USERNAME = "PunkuOpen"; // <-- ¡Cambia esto por tu usuario!
-const FIXED_PIN = "152403";         // <-- ¡Cambia esto por tu PIN!
+const FIXED_PIN = "032415";         // <-- ¡Cambia esto por tu PIN!
 // *************************************
 
 function iniciarSesion() {
