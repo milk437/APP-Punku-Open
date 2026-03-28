@@ -14,7 +14,7 @@
 
   <header>
     <h1>Punku Open</h1>
-    <p>🧠 Generador de Resúmenes (Llama 3)</p>
+    <p>🧠 Generador de Resúmenes PRO (Llama 3)</p>
     <div style="margin-top: 0.5rem;">
       <span id="usuarioActivo" style="font-size: 0.9rem;"></span><br />
       <button onclick="cerrarSesion()" style="margin-top: 0.5rem;">🔓 Cerrar sesión</button><br />
@@ -24,7 +24,7 @@
 
   <main style="padding: 2rem; max-width: 800px; margin: auto;">
     <section>
-      <label><b>Tipo de entrada:</b>
+      <label>Tipo de entrada:
         <select id="inputType">
           <option value="book">📘 Libro / Obra</option>
           <option value="url">🌐 Enlace Web</option>
@@ -40,37 +40,33 @@
       <div id="urlInputs" style="display: none;">
         <input type="url" id="inputUrl" placeholder="Pega aquí la URL (web o video)" style="width: 100%;">
       </div>
-      
       <br/>
 
-      <label><b>Longitud del resumen:</b>
+      <label>Longitud del resumen:
         <select id="targetWordCount">
-          <option value="100">100 palabras</option>
-          <option value="200" selected>200 palabras</option>
-          <option value="500">500 palabras</option>
+          <option value="150">150 palabras</option>
+          <option value="300" selected>300 palabras</option>
+          <option value="600">600 palabras</option>
           <option value="libre">Libre</option>
         </select>
       </label><br/><br/>
 
-      <div class="button-container">
-          <button onclick="generarResumen()" style="background-color: #007bff; color: white; padding: 10px 20px; font-weight: bold;">✨ Generar Resumen</button>
-          <button onclick="copiarResumen()">📋 Copiar</button>
-          <button onclick="descargarPDF()">⬇️ PDF</button>
-          <button onclick="descargarWord()">📝 Word</button>
-          <button onclick="enviarCorreo()">📧 Correo</button>
-          <button onclick="enviarWhatsapp()" style="background-color: #25d366; color: white;">🟢 WhatsApp</button>
-      </div>
+      <button onclick="generarResumen()">✨ Generar Resumen</button>
+      <button onclick="copiarResumen()">📋 Copiar</button>
+      <button onclick="descargarPDF()">⬇️ PDF</button>
+      <button onclick="descargarWord()">📝 Word</button>
+      <button onclick="enviarCorreo()">📧 Correo</button>
+      <button onclick="enviarWhatsapp()">🟢 WhatsApp</button><br/><br/>
 
-      <br/>
-      <p id="mensaje" style="color: #007bff; font-weight: bold;"></p>
-      <p id="error" style="color: #d93025; font-weight: bold;"></p>
+      <p id="mensaje" style="font-weight: bold; color: #007bff;"></p>
+      <p id="error" style="font-weight: bold; color: #dc3545;"></p>
     </section>
 
-    <section id="resultado" style="margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem;"></section>
+    <section id="resultado" style="margin-top: 2rem; line-height: 1.6; text-align: justify;"></section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Punku Open | Educación Digital</p>
+    <p>&copy; 2026 Punku Open</p>
   </footer>
 
   <script src="resumen.js"></script>
