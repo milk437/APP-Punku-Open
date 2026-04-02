@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punku Open | Guion de Podcast</title>
+  <style>
+    :root { --bg: #0d0d0d; --gold: #ffd700; --card: #1a1a1a; --border: #444; }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--gold); margin: 0; padding-bottom: 50px; }
+    header { background: #111; padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
+    main { max-width: 750px; margin: 30px auto; background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid var(--border); }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: bold; }
+    select, input, textarea { width: 100%; padding: 12px; background: #252525; border: 1px solid var(--border); color: white; border-radius: 8px; box-sizing: border-box; }
+    .btn-main { background: var(--gold); color: black; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; text-transform: uppercase; margin-top: 10px; }
+    #resultadoArea { margin-top: 30px; display: none; border-top: 1px solid var(--border); padding-top: 20px; }
+    #promptOutput { background: #000; color: #00ff41; font-family: 'Consolas', monospace; height: 200px; border: 1px solid var(--gold); resize: none; margin-bottom: 15px; }
+    .grid-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-action { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; text-align: center; text-decoration: none; font-size: 0.9rem; }
+    .btn-copy { background: #444; } .btn-wa { background: #25d366; } .btn-gpt { background: #74aa9c; } .btn-gemini { background: #4285f4; }
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px; font-weight: bold; display: none; z-index: 1000; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Punku Open</h1>
+  <p>🎙️ Generador de Guiones para Podcast Educativo</p>
+</header>
+
+<main>
+  <div class="form-group">
+    <label>Tema del Podcast (o sesión de aprendizaje):</label>
+    <input type="text" id="temaPodcast" placeholder="Ej: El cuidado del agua en mi comunidad">
+  </div>
+
+  <div class="form-group">
+    <label>Público Objetivo:</label>
+    <select id="gradoEstudiantes">
+      <option value="Primaria">Estudiantes de Primaria</option>
+      <option value="Secundaria" selected>Estudiantes de Secundaria</option>
+      <option value="Padres de Familia">Padres de Familia / Comunidad</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Formato del Podcast:</label>
+    <select id="formatoPodcast">
+      <option value="Entrevista">Entrevista (Locutor y Experto)</option>
+      <option value="Narrativo">Narrativo / Cuentacuentos</option>
+      <option value="Debate">Mesa Redonda / Debate</option>
+      <option value="Informativo">Noticiero / Informativo</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Duración estimada:</label>
+    <select id="duracionPodcast">
+      <option value="3 minutos">Cápsula rápida (3 min)</option>
+      <option value="5 a 7 minutos" selected>Estándar (5-7 min)</option>
+      <option value="10 minutos">Extenso (10 min)</option>
+    </select>
+  </div>
+
+  <button class="btn-main" onclick="generarPromptPodcast()">✨ Preparar Guion Maestro</button>
+
+  <div id="resultadoArea">
+    <label>📋 Instrucción generada para la IA:</label>
+    <textarea id="promptOutput" readonly></textarea>
+    <div class="grid-btns">
+      <button class="btn-action btn-copy" onclick="copiarPrompt()">📋 Copiar Prompt</button>
+      <button class="btn-action btn-wa" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
+      <a href="https://chat.openai.com/" target="_blank" class="btn-action btn-gpt">🤖 Abrir ChatGPT</a>
+      <a href="https://gemini.google.com/" target="_blank" class="btn-action btn-gemini">💎 Abrir Gemini</a>
+    </div>
+  </div>
+</main>
+
+<div id="toast">✅ ¡Copiado con éxito!</div>
+
+<script src="podcast.js"></script>
+</body>
+</html>
