@@ -3,35 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Punku Open | Resúmenes Pedagógicos</title>
+  <title>Punku Open | Resúmenes Pro</title>
   <style>
-    :root {
-      --bg: #0d0d0d;
-      --gold: #ffd700;
-      --card: #1a1a1a;
-      --input: #252525;
-      --border: #444;
-    }
+    :root { --bg: #0d0d0d; --gold: #ffd700; --card: #1a1a1a; --border: #444; }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--gold); margin: 0; padding-bottom: 50px; }
-    header { background: #111; padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); box-shadow: 0 4px 15px rgba(255,215,0,0.2); }
+    header { background: #111; padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
     main { max-width: 700px; margin: 30px auto; background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid var(--border); }
     .form-group { margin-bottom: 20px; }
     label { display: block; margin-bottom: 8px; font-weight: bold; }
-    select, input, textarea { width: 100%; padding: 12px; background: var(--input); border: 1px solid var(--border); color: white; border-radius: 8px; box-sizing: border-box; }
-    select:focus, input:focus { border-color: var(--gold); outline: none; }
-    .btn-main { background: var(--gold); color: black; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; text-transform: uppercase; transition: 0.3s; }
-    .btn-main:hover { background: #ffcc00; box-shadow: 0 0 20px rgba(255,215,0,0.4); transform: translateY(-2px); }
+    select, input, textarea { width: 100%; padding: 12px; background: #252525; border: 1px solid var(--border); color: white; border-radius: 8px; box-sizing: border-box; }
+    .btn-main { background: var(--gold); color: black; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 10px; }
     #resultadoArea { margin-top: 30px; display: none; border-top: 1px solid var(--border); padding-top: 20px; }
-    #promptOutput { background: #000; color: #00ff41; font-family: 'Consolas', monospace; height: 200px; border: 1px solid var(--gold); resize: none; margin-bottom: 15px; }
-    .btn-action { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 10px; }
-    footer { text-align: center; color: #555; font-size: 0.8rem; margin-top: 20px; }
+    #promptOutput { background: #000; color: #00ff41; font-family: 'Consolas', monospace; height: 180px; border: 1px solid var(--gold); resize: none; margin-bottom: 15px; font-size: 0.9rem; }
+    
+    /* Contenedor de botones de acción */
+    .grid-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .btn-action { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; text-align: center; text-decoration: none; font-size: 0.9rem; }
+    
+    /* Colores de botones */
+    .btn-copy { background: #444; }
+    .btn-wa { background: #25d366; }
+    .btn-gpt { background: #74aa9c; }
+    .btn-gemini { background: #4285f4; }
+    
+    /* Notificación flotante */
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px; font-weight: bold; display: none; z-index: 1000; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>Punku Open</h1>
-  <p>Generador de Instrucciones de Resumen para IA</p>
+  <p>Resúmenes de Alto Nivel para el Magisterio</p>
 </header>
 
 <main>
@@ -45,7 +48,7 @@
 
   <div id="seccionLibro">
     <div class="form-group"><input type="text" id="tituloLibro" placeholder="Título de la obra"></div>
-    <div class="form-group"><input type="text" id="autorLibro" placeholder="Autor de la obra"></div>
+    <div class="form-group"><input type="text" id="autorLibro" placeholder="Autor"></div>
   </div>
 
   <div id="seccionEnlace" style="display: none;">
@@ -53,7 +56,7 @@
   </div>
 
   <div class="form-group">
-    <label>Extensión del Resumen:</label>
+    <label>Extensión:</label>
     <select id="longitudResumen">
       <option value="250">Sintético (250 palabras)</option>
       <option value="500" selected>Estándar (500 palabras)</option>
@@ -64,16 +67,19 @@
   <button class="btn-main" onclick="generarPromptResumen()">✨ Preparar Instrucción Maestra</button>
 
   <div id="resultadoArea">
-    <label style="color: #fff;">📋 Instrucción lista (Copia y pega en Gemini/ChatGPT):</label>
+    <label>📋 Instrucción Generada:</label>
     <textarea id="promptOutput" readonly></textarea>
-    <div style="display: flex;">
-      <button class="btn-action" style="background: #444; color: white;" onclick="copiarPrompt()">📋 Copiar</button>
-      <button class="btn-action" style="background: #25d366; color: white;" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
+    
+    <div class="grid-btns">
+      <button class="btn-action btn-copy" onclick="copiarPrompt()">📋 Copiar Prompt</button>
+      <button class="btn-action btn-wa" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
+      <a href="https://chat.openai.com/" target="_blank" class="btn-action btn-gpt">🤖 Abrir ChatGPT</a>
+      <a href="https://gemini.google.com/" target="_blank" class="btn-action btn-gemini">💎 Abrir Gemini</a>
     </div>
   </div>
 </main>
 
-<footer>Punku Open 2026 | Desarrollado para el Magisterio Peruano</footer>
+<div id="toast">✅ ¡Copiado con éxito!</div>
 
 <script src="resumen.js"></script>
 </body>
