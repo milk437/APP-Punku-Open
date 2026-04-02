@@ -1,15 +1,15 @@
 /**
- * Lógica de Punku Open para la generación de Prompts de Resumen
- * Diseñado para evitar bloqueos de API y maximizar calidad de IA externa.
+ * Lógica Sincronizada para Punku Open
  */
 
-// Alternar campos según selección
+// 1. Manejo de visibilidad de los campos según selección
 document.getElementById('tipoRecurso').addEventListener('change', function() {
     const esLibro = this.value === 'libro';
     document.getElementById('seccionLibro').style.display = esLibro ? 'block' : 'none';
     document.getElementById('seccionEnlace').style.display = esLibro ? 'none' : 'block';
 });
 
+// 2. Función Principal vinculada al botón del HTML
 function generarPromptResumen() {
     const tipo = document.getElementById('tipoRecurso').value;
     const palabras = document.getElementById('longitudResumen').value;
@@ -22,53 +22,56 @@ function generarPromptResumen() {
         const titulo = document.getElementById('tituloLibro').value;
         const autor = document.getElementById('autorLibro').value;
 
-        if (!titulo) return alert("Por favor, ingresa el título de la obra.");
+        if (!titulo) {
+            alert("Por favor, ingresa el título del libro.");
+            return;
+        }
 
-        promptFinal = `Actúa como un Especialista en Literatura y Pedagogía Universitaria. 
-Realiza un ANÁLISIS ACADÉMICO Y RESUMEN de la obra: "${titulo}" de ${autor || 'Autor reconocido'}.
+        promptFinal = `Actúa como Especialista en Literatura y Pedagogía. 
+Realiza un RESUMEN ACADÉMICO de la obra: "${titulo}" de ${autor || 'Autor reconocido'}.
 
-REQUERIMIENTOS TÉCNICOS:
-1. RESUMEN: Extensión de ${palabras} palabras aproximadamente.
-2. ESTRUCTURA: 
-   - Contexto de la obra y el autor.
-   - Resumen ejecutivo por partes o capítulos clave.
-   - Tabla de personajes principales y secundarios con sus roles.
-   - 3 Ejes temáticos vinculados al Currículo Nacional (CNEB).
-3. LENGUAJE: Humanizado, técnico-pedagógico y fluido.
-
-⚠️ REGLA CRÍTICA: No des introducciones ("Aquí tienes el resumen..."). Entrega el contenido directamente en formato profesional Markdown.`;
+REQUERIMIENTOS:
+1. EXTENSIÓN: Aprox. ${palabras} palabras.
+2. ESTRUCTURA: Contexto, resumen de trama, TABLA de personajes y 3 temas para trabajar en clase (CNEB).
+3. LENGUAJE: Técnico-pedagógico, humano y sin saludos de IA.`;
 
     } else {
         const url = document.getElementById('urlWeb').value;
-        if (!url) return alert("Por favor, ingresa una dirección URL válida.");
+        if (!url) {
+            alert("Por favor, ingresa una URL válida.");
+            return;
+        }
 
-        promptFinal = `Actúa como un Analista de Información Pedagógica.
-Procesa, analiza y resume el contenido del siguiente enlace: ${url}
+        promptFinal = `Actúa como Analista Curricular. 
+Analiza y resume el contenido de este enlace: ${url}
 
 REQUERIMIENTOS:
-1. SÍNTESIS CRÍTICA: Resumen de ${palabras} palabras con las ideas fuerza del texto.
-2. ORGANIZACIÓN: Presenta en una TABLA los datos relevantes, estadísticas o fechas clave.
-3. CONCLUSIÓN: Breve párrafo sobre la utilidad de este contenido para un docente peruano.
-
-⚠️ REGLA CRÍTICA: Entrega el texto técnico directamente. Sin saludos ni comentarios de IA al inicio o al final.`;
+1. SÍNTESIS: Ideas principales en ${palabras} palabras.
+2. DATOS: TABLA con hechos o estadísticas clave del texto.
+3. REGLA: Entrega el contenido directamente, sin introducciones ni despedidas de IA.`;
     }
 
-    // Mostrar el prompt en el área de texto
+    // Mostrar el resultado y desplazar la vista
     output.value = promptFinal;
     areaResultado.style.display = 'block';
     areaResultado.scrollIntoView({ behavior: 'smooth' });
 }
 
-function copiarAlPortapapeles() {
-    const textarea = document.getElementById("promptOutput");
-    textarea.select();
+// 3. Función para copiar al portapapeles
+function copiarPrompt() {
+    const promptText = document.getElementById("promptOutput");
+    if (!promptText.value) return;
+    
+    promptText.select();
     document.execCommand("copy");
-    alert("¡Instrucción copiada! Ahora pégala en Gemini o ChatGPT.");
+    alert("✅ ¡Copiado! Pégalo ahora en tu IA favorita.");
 }
 
-function compartirWhatsApp() {
+// 4. Función para enviar vía WhatsApp
+function enviarWhatsApp() {
     const texto = document.getElementById("promptOutput").value;
     if (!texto) return;
-    const msg = encodeURIComponent("Punku Open | Instrucción de Resumen: " + texto);
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+    
+    const codificado = encodeURIComponent("Punku Open - Instrucción: " + texto);
+    window.open(`https://wa.me/?text=${codificado}`, '_blank');
 }
