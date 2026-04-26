@@ -1,52 +1,26 @@
-/**
- * PUNKU OPEN SERVICE WORKER - VERSIÓN DINÁMICA
- * Forzar actualización al detectar cambios en Git
- */
+// sw.js - Versión Autolimpiante
+const CACHE_NAME = 'punku-open-v21'; // <--- CAMBIA ESTE NÚMERO
 
-// 1. CADA VEZ QUE SUBAS UN CAMBIO, SUBE ESTE NÚMERO (v2, v3, v4...)
-const CACHE_NAME = 'punku-open-v15'; 
-
-const assetsToCache = [
-  './',
-  './index.html',
-  './icon-192.png',
-  './icon-512.png'
-];
-
-// INSTALACIÓN: Se ejecuta cuando cambias el CACHE_NAME
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Fuerza al nuevo SW a activarse sin esperar
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('Punku Open: Archivos cacheados con éxito');
-      return cache.addAll(assetsToCache);
-    })
-  );
+  self.skipWaiting(); // No pidas permiso, instálate ya
 });
 
-// ACTIVACIÓN: Borra los rastros de la versión anterior
 self.addEventListener('activate', event => {
+  // Limpia toda la basura de versiones anteriores (v1, v6, etc)
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            console.log('Punku Open: Borrando caché antiguo...', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    })
+    caches.keys().then(keys => Promise.all(
+      keys.map(key => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      })
+    ))
   );
-  return self.clients.claim(); // Toma el control de la página inmediatamente
+  return self.clients.claim();
 });
 
-// ESTRATEGIA: RED PRIMERO (Network First)
-// Intenta traer lo último de Git; si falla (estás offline), usa el caché.
+// ESTRATEGIA CLAVE: Network First
+// Primero intenta traer lo de Git. Si falla, usa el caché.
 self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
