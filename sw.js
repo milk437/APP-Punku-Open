@@ -1,5 +1,5 @@
 // sw.js - Versión Autolimpiante
-const CACHE_NAME = 'punku-open-v22'; // <--- CAMBIA ESTE NÚMERO
+const CACHE_NAME = 'punku-open-v23'; // <--- CAMBIA ESTE NÚMERO
 
 self.addEventListener('install', event => {
   self.skipWaiting(); // No pidas permiso, instálate ya
