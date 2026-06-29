@@ -12,6 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Punku Open">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
 
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -98,6 +99,11 @@
       transition: 0.3s;
     }
 
+    .header-logout-button:hover {
+      background-color: var(--button-hover-bg);
+      transform: translateY(-2px);
+    }
+
     .theme-toggle-button {
       background-color: var(--sidebar-bg);
       color: var(--accent-color);
@@ -110,6 +116,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: 0.3s;
+    }
+
+    .theme-toggle-button:hover {
+      background-color: var(--accent-color);
+      color: var(--button-text);
     }
 
     #hover-message-bar {
@@ -127,7 +139,9 @@
       box-sizing: border-box;
     }
 
-    #hover-message-bar.visible { opacity: 1; }
+    #hover-message-bar.visible { 
+      opacity: 1; 
+    }
 
     main {
       flex-grow: 1;
@@ -172,7 +186,9 @@
       box-shadow: 0 8px 20px var(--shadow-color-hover);
     }
 
-    .app-buttons-container button .icon { font-size: 1.8em; }
+    .app-buttons-container button .icon { 
+      font-size: 1.8em; 
+    }
 
     footer {
       background-color: #111;
@@ -183,8 +199,12 @@
     }
 
     @media (max-width: 600px) {
-      header .main-title { font-size: 2em; }
-      .app-buttons-container button { flex: 1 1 100%; }
+      header .main-title { 
+        font-size: 2em; 
+      }
+      .app-buttons-container button { 
+        flex: 1 1 100%; 
+      }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
@@ -205,88 +225,106 @@
 
   <div id="hover-message-bar"></div>
 
-  <div class="main-content-wrapper">
-    <main>
-      <span id="usuarioActivo" style="font-size: 0.9rem; margin-bottom: 1rem; display: block; text-align: center;"></span>
+  <main>
+    <span id="usuarioActivo" style="font-size: 0.9rem; margin-bottom: 1rem; display: block; text-align: center;"></span>
+    
+    <div class="app-buttons-container">
       
-      <div class="app-buttons-container">
-    <button onclick="location.href='index.html'" data-message="Vuelve al inicio de tu plataforma.">
+      <button onclick="location.href='index.html'" data-message="Vuelve al inicio de tu plataforma.">
         <span class="icon">🏠</span> Inicio
-    </button>
-    <button onclick="window.open('https://1drv.ms/f/c/4337d1366c70079a/IgDw-Q4qQTHvQ7tvh3BFReQOAR_jNnh67djUY8fZNvsbzdw?e=SPOReD', '_blank')" data-message="Accede a tus documentos en OneDrive.">
+      </button>
+      
+      <button onclick="window.open('https://1drv.ms/f/c/4337d1366c70079a/IgDw-Q4qQTHvQ7tvh3BFReQOAR_jNnh67djUY8fZNvsbzdw?e=SPOReD', '_blank')" data-message="Accede a tus documentos en OneDrive.">
         <span class="icon">📂</span> OneDrive
-    </button>
-    <button onclick="location.href='asistencia.html'" data-message="Analiza reportes y tendencias de asistencia.">
-        <span class="icon">📊</span> Reporte Asistencia 
-    </button>
-    <button onclick="window.open('https://milk437.github.io/APPPUNKUOPENASISTENCIA', '_blank')" data-message="Registro rápido para estudiantes.">
+      </button>
+      
+      <button onclick="location.href='asistencia.html'" data-message="Analiza reportes y tendencias de asistencia.">
+        <span class="icon">📊</span> Reporte Asistencia
+      </button>
+      
+      <button onclick="window.open('https://milk437.github.io/APPPUNKUOPENASISTENCIA', '_blank')" data-message="Registro rápido para estudiantes.">
         <span class="icon">📈</span> Registro Asistencia
-    </button>
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbyc00s3-NVRTrUAxYymHZBeDxdCCsy6KLcgt78ZYXHwTYbcgHkhcTMwI3WbzlfzLh9k/exec', '_blank')" data-message="Control de calificaciones y progreso.">
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbyc00s3-NVRTrUAxYymHZBeDxdCCsy6KLcgt78ZYXHwTYbcgHkhcTMwI3WbzlfzLh9k/exec', '_blank')" data-message="Control de calificaciones y progreso.">
         <span class="icon">📋</span> Registro Auxiliar
-    </button>
+      </button>
 
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbxQKkVl9Ise_yPALw-hidd1MGS98Z5LZijfpO5uDCWrHlv60zP7S529R4OTuRJNI-E-0Q/exec')" data-message="Captura y organiza trabajos de alumnos (1° a 5°) directamente en tu Google Drive.">
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbxQKkVl9Ise_yPALw-hidd1MGS98Z5LZijfpO5uDCWrHlv60zP7S529R4OTuRJNI-E-0Q/exec', '_blank')" data-message="Captura y organiza trabajos de alumnos (1° a 5°) directamente en tu Google Drive.">
         <span class="icon">📸</span> Gestor de Evidencias
-    </button>
+      </button>
 
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbxQpH5IfE1fH6z3b1pdNZICJhBoNz5iOFx7ZIw2GFVr8Fi4mj9OOheEg5K6Y_zdmTMT/exec', '_blank')" data-message="Planifica tu año escolar con apoyo de IA.">
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbxQpH5IfE1fH6z3b1pdNZICJhBoNz5iOFx7ZIw2GFVr8Fi4mj9OOheEg5K6Y_zdmTMT/exec', '_blank')" data-message="Planifica tu año escolar con apoyo de IA.">
         <span class="icon">🗓️</span> Programaciones Anuales
-    </button>
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbyOR6N_N_GZcpjcL1yyJ1rjvNgxR3h9V7chcVjueeQ6VpD9_lwPYfNldWTkZYNhu0uf/exec', '_blank')" data-message="Crea unidades didácticas por competencias.">
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbyOR6N_N_GZcpjcL1yyJ1rjvNgxR3h9V7chcVjueeQ6VpD9_lwPYfNldWTkZYNhu0uf/exec', '_blank')" data-message="Crea unidades didácticas por competencias.">
         <span class="icon">📝</span> Unidades de Aprendizaje
-    </button>
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbyXa0RTlVImXZYFprW3bsvc1s9L1gnN31aHnV__i9L8-0V8XI9kaIdfSDYDMstFJjh-GA/exec', '_blank')" data-message="Desarrolla proyectos basados en problemas.">
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbyXa0RTlVImXZYFprW3bsvc1s9L1gnN31aHnV__i9L8-0V8XI9kaIdfSDYDMstFJjh-GA/exec', '_blank')" data-message="Desarrolla proyectos basados en problemas.">
         <span class="icon">💡</span> Proyectos de Aprendizaje
-    </button>
-    <button onclick="window.open('https://milk437.github.io/PunkuOpen/', '_blank')" data-message="Gestiona tus sesiones de clase.">
+      </button>
+      
+      <button onclick="window.open('https://milk437.github.io/PunkuOpen/', '_blank')" data-message="Gestiona tus sesiones de clase.">
         <span class="icon">🚪</span> Sesiones de Aprendizaje
-    </button>
-    <button onclick="location.href='resumen.html'" data-message="Genera resúmenes automáticos con IA.">
+      </button>
+      
+      <button onclick="location.href='resumen.html'" data-message="Genera resúmenes automáticos con IA.">
         <span class="icon">🧠</span> Generador de Resúmenes
-    </button>
-    <button onclick="location.href='podcast.html'" data-message="Crea guiones para podcasts educativos y radio escolar.">
+      </button>
+      
+      <button onclick="location.href='podcast.html'" data-message="Crea guiones para podcasts educativos y radio escolar.">
         <span class="icon">🎙️</span> Guion de Podcast
-    </button>
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbxhv_t44nRkUI6rP6vlcw-hss2lIWjzHHKn9cgcIvOr57dut7LPFOhzY5-7NjxumIJf/exec', '_blank')" data-message="Redacción creativa de textos con IA.">
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbxhv_t44nRkUI6rP6vlcw-hss2lIWjzHHKn9cgcIvOr57dut7LPFOhzY5-7NjxumIJf/exec', '_blank')" data-message="Redacción creativa de textos con IA.">
         <span class="icon">✍️</span> Creador de Textos IA
-    </button>
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbykHSu-3vH3XEWzrb8AF-aX3BRqkbHfVWN4LUHukLnq90JlZYF6epjuIkIhdrwy9QbXRg/exec', '_blank')" data-message="Redacción profesional de 25 tipos de documentos administrativos y jurídicos con IA.">
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbykHSu-3vH3XEWzrb8AF-aX3BRqkbHfVWN4LUHukLnq90JlZYF6epjuIkIhdrwy9QbXRg/exec', '_blank')" data-message="Redacción profesional de 25 tipos de documentos administrativos y jurídicos con IA.">
         <span class="icon">📜</span> Punku Open Office
-    </button>
-    <button onclick="window.open('https://milk437.github.io/PUNKUOPEN-DICCIONARIO/', '_blank')" data-message="Amplía tu vocabulario pedagógico.">
+      </button>
+      
+      <button onclick="window.open('https://milk437.github.io/PUNKUOPEN-DICCIONARIO/', '_blank')" data-message="Amplía tu vocabulario pedagógico.">
         <span class="icon">📖</span> Diccionario
-    </button>
+      </button>
 
-    <button onclick="window.open('https://script.google.com/macros/s/AKfycbzAjUoVwTLoHABHftUwMK-txoJ-GST5EjeRPetIsaH9EmrPV8BiQ3U1Y916d78OJayQ2w/exec', '_blank')" data-message="Explora Punku Ñawi para nuevas funcionalidades.">
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbzAjUoVwTLoHABHftUwMK-txoJ-GST5EjeRPetIsaH9EmrPV8BiQ3U1Y916d78OJayQ2w/exec', '_blank')" data-message="Explora Punku Ñawi para nuevas funcionalidades.">
         <span class="icon">👁️</span> Punku Ñawi
-    </button>
-  <button onclick="window.open('https://script.google.com/macros/s/AKfycbz8KdLu5vFhI-hsyPCN9DSWCS2XkGat13FNvc2uZ4JhgVHU7u50I3wSRvb93qidPIJM/exec')" data-message="Accede al nuevo recurso del Cuaderno de Campo Digital.">
-    <span class="icon">📝</span> Cuaderno Digital del Tutor
-</button>
-  <button onclick="window.open('https://script.google.com/macros/s/AKfycbw_hQ5wRqW4O44nP-VHyUwUjBrMs2I6myhIA0CSgQD9Ggd41m9INab6yBU4ztukOv7tig/exec')" data-message="Accede al módulo de Control de Asistencia Digital de Punku Open.">
-    <span class="icon">📊</span> Control de Asistencia
-</button>
-  <button onclick="window.open('https://script.google.com/macros/s/AKfycbxpJGNu7JxTU8JEad4BKv6f2-iLzTsKnqPNRtXUwhlVvg0ffWPez0aU1CA0eX59Yc4R/exec')" data-message="Accede al módulo de Fichas de Trabajo de Punku Open.">
-    <span class="icon">📄</span> Fichas de Trabajo
-</button>
-</div>
-</button>
-  <button onclick="window.open('https://script.google.com/macros/s/AKfycbwBOyasU9iGRspgmqMgW7s41eNkANGkewyG2lTU7zGlyNOTnrMs6H_5H3JwqK7tpSOh/exec')" data-message="Accede al módulo de Punku Open IA.">
-    <span class="icon">✨</span> PUNKU OPEN IA
-</button>
-</div>
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbz8KdLu5vFhI-hsyPCN9DSWCS2XkGat13FNvc2uZ4JhgVHU7u50I3wSRvb93qidPIJM/exec', '_blank')" data-message="Accede al nuevo recurso del Cuaderno de Campo Digital.">
+        <span class="icon">📝</span> Cuaderno Digital del Tutor
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbw_hQ5wRqW4O44nP-VHyUwUjBrMs2I6myhIA0CSgQD9Ggd41m9INab6yBU4ztukOv7tig/exec', '_blank')" data-message="Accede al módulo de Control de Asistencia Digital de Punku Open.">
+        <span class="icon">📊</span> Control de Asistencia
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbxpJGNu7JxTU8JEad4BKv6f2-iLzTsKnqPNRtXUwhlVvg0ffWPez0aU1CA0eX59Yc4R/exec', '_blank')" data-message="Accede al módulo de Fichas de Trabajo de Punku Open.">
+        <span class="icon">📄</span> Fichas de Trabajo
+      </button>
+      
+      <button onclick="window.open('https://script.google.com/macros/s/AKfycbwBOyasU9iGRspgmqMgW7s41eNkANGkewyG2lTU7zGlyNOTnrMs6H_5H3JwqK7tpSOh/exec', '_blank')" data-message="Accede al módulo de Punku Open IA.">
+        <span class="icon">✨</span> PUNKU OPEN IA
+      </button>
+
+    </div>
+  </main>
+
   <footer>
     <p>&copy; 2026 Plataforma Digital Punku Open. Milton Ruiz - Todos los Derechos Reservados.</p>
   </footer>
+
   <script src="app.js"></script>
   <script>
-    // REGISTRO DEL SERVICE WORKER PARA INSTALACIÓN
+    // REGISTRO DEL SERVICE WORKER PARA INSTALACIÓN PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Plataforma Digital Punku Open: Instalación Activa'))
-          .catch(err => console.error('Fallo en registro PWA', err));
+          .then(reg => console.log('✅ Punku Open: PWA Instalada - v39'))
+          .catch(err => console.error('❌ Error registro PWA:', err));
       });
     }
 
@@ -306,7 +344,7 @@
       location.href = "login.html";
     }
 
-    // Lógica del Tema
+    // Lógica del Tema Claro/Oscuro
     const themeToggleButton = document.getElementById('themeToggleButton');
     if (themeToggleButton) {
       themeToggleButton.addEventListener('click', () => {
