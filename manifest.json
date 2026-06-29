@@ -15,7 +15,8 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/",
+  "start_url": "/APP-Punku-Open/",
+  "scope": "/APP-Punku-Open/",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#d4af37"
