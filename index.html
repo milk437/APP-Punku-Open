@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Punku Open | Portafolio Docente 2026</title>
   
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=3" crossorigin="use-credentials">
   <meta name="theme-color" content="#d4af37">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,6 @@
 
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Variables de Color */
     :root {
       --bg-color: #0d0d0d;
       --text-color: gold;
@@ -319,12 +318,11 @@
 
   <script src="app.js"></script>
   <script>
-    // REGISTRO DEL SERVICE WORKER PARA INSTALACIÓN PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('✅ Punku Open: PWA Instalada - v39'))
-          .catch(err => console.error('❌ Error registro PWA:', err));
+          .then(reg => console.log('✅ Punku Open: PWA v41'))
+          .catch(err => console.error('❌ Error SW:', err));
       });
     }
 
@@ -344,7 +342,6 @@
       location.href = "login.html";
     }
 
-    // Lógica del Tema Claro/Oscuro
     const themeToggleButton = document.getElementById('themeToggleButton');
     if (themeToggleButton) {
       themeToggleButton.addEventListener('click', () => {
