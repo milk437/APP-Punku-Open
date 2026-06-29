@@ -1,12 +1,24 @@
-// sw.js - Versión Autolimpiante
-const CACHE_NAME = 'punku-open-v39'; // <--- CAMBIA DE v
+// sw.js - Versión Autolimpiante v40
+const CACHE_NAME = 'punku-open-v40';
 
+// Instalación inmediata con cacheo de recursos clave
 self.addEventListener('install', event => {
-  self.skipWaiting(); // No pidas permiso, instálate ya
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/manifest.json',
+        '/icon-192.png',
+        '/icon-512.png'
+      ]);
+    })
+  );
 });
 
+// Limpia cachés antiguas al activar
 self.addEventListener('activate', event => {
-  // Limpia toda la basura de versiones anteriores (v1, v6, etc)
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
       keys.map(key => {
@@ -17,8 +29,7 @@ self.addEventListener('activate', event => {
   return self.clients.claim();
 });
 
-// ESTRATEGIA CLAVE: Network First
-// Primero intenta traer lo de Git. Si falla, usa el caché.
+// Estrategia: Network First (red primero, caché como respaldo)
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
