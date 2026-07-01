@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Punku Open | Generador Analítico</title>
+  <title>Punku Open | Generador de Resúmenes</title>
   <style>
     :root {
       --color-primario: #ffd700;
@@ -203,13 +203,13 @@
 
 <header class="header">
   <h1>📚 Punku Open</h1>
-  <p>Análisis Textual y Resúmenes Estructurados</p>
+  <p>Análisis Textual y Resúmenes</p>
   <button class="btn-volver" onclick="window.location.href='/'">⬅ Volver al inicio</button>
 </header>
 
 <div class="container">
   <main class="card">
-    <h2>✍️ Generar Documento Analítico</h2>
+    <h2>✍️ Generar Documento</h2>
 
     <div class="form-group">
       <label for="tipoRecurso">Tipo de Recurso:</label>
@@ -240,11 +240,11 @@
     <div class="form-group">
       <label for="tipoEstructura">Tipo de resumen:</label>
       <select id="tipoEstructura">
-        <option value="sintesis">📄 Síntesis (1 párrafo)</option>
-        <option value="analisis">📑 Análisis (3 párrafos)</option>
-        <option value="critica">🔍 Crítico (4 párrafos)</option>
-        <option value="ejecutivo">📊 Ejecutivo (6 párrafos)</option>
-        <option value="academico">🎓 Académico (8 párrafos)</option>
+        <option value="sintesis">📄 Síntesis</option>
+        <option value="analisis">📑 Análisis</option>
+        <option value="critica">🔍 Crítico</option>
+        <option value="ejecutivo">📊 Ejecutivo</option>
+        <option value="academico">🎓 Académico</option>
       </select>
     </div>
 
@@ -252,7 +252,7 @@
 
     <div id="loading" class="oculto">
       <div class="spinner"></div>
-      <p>⏳ Analizando y estructurando el texto...</p>
+      <p>⏳ Analizando del texto...</p>
     </div>
 
     <section id="resultado" class="oculto">
