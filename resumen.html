@@ -3,104 +3,275 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Punku Open | Generador de Resúmenes</title>
+  <title>Punku Open | Generador Analítico</title>
   <style>
+    :root {
+      --color-primario: #ffd700;
+      --bg-dark: #0d0d0d;
+      --bg-card: #1a1a1a;
+      --bg-input: #252525;
+      --text-main: #e0e0e0;
+      --text-muted: #aaa;
+      --border-color: #444;
+      --radius: 12px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0d0d0d; color: #e0e0e0; min-height: 100vh; }
-    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #111, #1a1a1a); padding: 30px 20px; text-align: center; border-bottom: 3px solid #ffd700; }
-    .header h1 { color: #ffd700; font-size: 2.5rem; }
-    .header p { color: #aaa; font-size: 1.1rem; margin-top: 5px; }
-    .btn-volver { background: #444; color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: background 0.3s; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-dark); color: var(--text-main); min-height: 100vh; }
+
+    .container { max-width: 820px; margin: 0 auto; padding: 20px; }
+
+    header.header {
+      background: linear-gradient(135deg, #111, var(--bg-card));
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom: 3px solid var(--color-primario);
+    }
+    header.header h1 { color: var(--color-primario); font-size: 2.5rem; letter-spacing: 1px; }
+    header.header p { color: var(--text-muted); font-size: 1.1rem; margin-top: 5px; }
+
+    .btn-volver {
+      background: var(--border-color);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 15px;
+      transition: background 0.3s;
+    }
     .btn-volver:hover { background: #555; }
-    .card { background: #1a1a1a; border-radius: 15px; padding: 30px; margin-top: 30px; border: 1px solid #444; }
-    .card h2 { color: #ffd700; font-size: 1.5rem; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #444; }
+
+    main.card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-top: 30px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+    }
+    main.card h2 {
+      color: var(--color-primario);
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
     .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #ccc; }
-    .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; background: #252525; border: 2px solid #444; color: white; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
-    .form-group select:focus, .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ffd700; }
-    .form-group textarea { resize: vertical; min-height: 250px; font-family: 'Segoe UI', sans-serif; line-height: 1.8; background: #0d0d0d; }
-    .btn-generar { background: linear-gradient(135deg, #ffd700, #ffed4a); color: #000; padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; width: 100%; transition: all 0.3s; letter-spacing: 1px; }
-    .btn-generar:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); }
-    .btn-generar:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    #loading { display: none; text-align: center; padding: 30px; }
-    .spinner { border: 4px solid #252525; border-top: 4px solid #ffd700; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    #loading p { color: #aaa; }
-    #resultado { display: none; margin-top: 20px; }
-    #resultado label { color: #ffd700; font-size: 1.1rem; display: block; margin-bottom: 10px; }
-    .grid-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
-    .btn-action { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; text-align: center; font-size: 0.85rem; transition: all 0.3s; }
-    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #ccc;
+    }
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 15px;
+      background: var(--bg-input);
+      border: 2px solid var(--border-color);
+      color: white;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    .form-group select:focus,
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--color-primario);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 280px;
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.8;
+      background: var(--bg-dark);
+    }
+
+    .oculto { display: none !important; }
+
+    .btn-generar {
+      background: linear-gradient(135deg, var(--color-primario), #ffed4a);
+      color: #000;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      width: 100%;
+      transition: all 0.3s;
+      letter-spacing: 1px;
+    }
+    .btn-generar:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 25px rgba(255, 215, 0, 0.35);
+    }
+    .btn-generar:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 30px;
+    }
+    .spinner {
+      border: 4px solid var(--bg-input);
+      border-top: 4px solid var(--color-primario);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #loading p { color: var(--text-muted); }
+
+    .grid-btns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .btn-action {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
     .btn-copy { background: #555; }
+    .btn-copy:hover { background: #666; }
     .btn-wa { background: #25d366; }
-    .btn-pdf { background: #dc3545; }
-    .btn-save { background: #17a2b8; }
-    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ffd700; color: #000; padding: 12px 25px; border-radius: 25px; font-weight: 700; display: none; z-index: 1000; }
-    @media (max-width: 600px) { .header h1 { font-size: 1.8rem; } .card { padding: 20px; } .grid-btns { grid-template-columns: 1fr 1fr; } }
+    .btn-wa:hover { background: #1da851; }
+    .btn-pdf { background: #c0392b; }
+    .btn-pdf:hover { background: #e74c3c; }
+    .btn-save { background: #2980b9; }
+    .btn-save:hover { background: #3498db; }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-primario);
+      color: #000;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 700;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transition: opacity 0.3s;
+    }
+
+    @media (max-width: 768px) {
+      header.header h1 { font-size: 2rem; }
+      main.card { padding: 20px; }
+      .grid-btns { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      header.header h1 { font-size: 1.6rem; }
+      header.header p { font-size: 0.95rem; }
+      main.card { padding: 16px; }
+      .grid-btns { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .btn-action { font-size: 0.75rem; padding: 10px; }
+      .form-group select, .form-group input { font-size: 0.95rem; padding: 10px 12px; }
+    }
   </style>
 </head>
 <body>
 
-<div class="header">
+<header class="header">
   <h1>📚 Punku Open</h1>
-  <p>Generador de Resúmenes con Inteligencia Artificial</p>
+  <p>Análisis Textual y Resúmenes Estructurados</p>
   <button class="btn-volver" onclick="window.location.href='/'">⬅ Volver al inicio</button>
-</div>
+</header>
 
 <div class="container">
-  <div class="card">
-    <h2>✍️ Generar Resumen</h2>
+  <main class="card">
+    <h2>✍️ Generar Documento Analítico</h2>
 
     <div class="form-group">
-      <label>Tipo de Recurso:</label>
+      <label for="tipoRecurso">Tipo de Recurso:</label>
       <select id="tipoRecurso">
         <option value="libro">📘 Obra Literaria / Libro</option>
-        <option value="enlace">🌐 Artículo Web / Noticia</option>
+        <option value="enlace">🌐 Artículo Web / Texto Académico</option>
       </select>
     </div>
 
-    <div id="seccionLibro">
-      <div class="form-group"><input type="text" id="tituloLibro" placeholder="Título de la obra"></div>
-      <div class="form-group"><input type="text" id="autorLibro" placeholder="Autor (opcional)"></div>
-    </div>
+    <section id="seccionLibro">
+      <div class="form-group">
+        <label for="tituloLibro">Título de la obra:</label>
+        <input type="text" id="tituloLibro" placeholder="Ej. El Sexto">
+      </div>
+      <div class="form-group">
+        <label for="autorLibro">Autor:</label>
+        <input type="text" id="autorLibro" placeholder="Ej. José María Arguedas">
+      </div>
+    </section>
 
-    <div id="seccionEnlace" style="display: none;">
-      <div class="form-group"><input type="url" id="urlWeb" placeholder="https://ejemplo.com/articulo"></div>
-    </div>
+    <section id="seccionEnlace" class="oculto">
+      <div class="form-group">
+        <label for="urlWeb">Enlace del texto:</label>
+        <input type="url" id="urlWeb" placeholder="https://ejemplo.com/articulo">
+      </div>
+    </section>
 
     <div class="form-group">
-      <label>Extensión del resumen:</label>
-      <select id="longitudResumen">
-        <option value="250">Sintético (250 palabras)</option>
-        <option value="500" selected>Estándar (500 palabras)</option>
-        <option value="850">Profundo (850 palabras)</option>
-        <option value="1200">Extenso (1200 palabras)</option>
+      <label for="tipoEstructura">Tipo de resumen:</label>
+      <select id="tipoEstructura">
+        <option value="sintesis">📄 Síntesis (1 párrafo)</option>
+        <option value="analisis">📑 Análisis (3 párrafos)</option>
+        <option value="critica">🔍 Crítico (4 párrafos)</option>
+        <option value="ejecutivo">📊 Ejecutivo (6 párrafos)</option>
+        <option value="academico">🎓 Académico (8 párrafos)</option>
       </select>
     </div>
 
-    <button class="btn-generar" id="btnGenerar">✨ Generar Resumen con IA</button>
+    <button class="btn-generar" id="btnGenerar">✨ Procesar con IA</button>
 
-    <div id="loading">
+    <div id="loading" class="oculto">
       <div class="spinner"></div>
-      <p>⏳ Generando resumen... Esto puede tomar unos segundos</p>
+      <p>⏳ Analizando y estructurando el texto...</p>
     </div>
 
-    <div id="resultado">
-      <label>📝 Resumen Generado:</label>
-      <div class="form-group"><textarea id="resumenOutput" readonly></textarea></div>
+    <section id="resultado" class="oculto">
+      <div class="form-group">
+        <label for="resumenOutput">📝 Documento Generado:</label>
+        <textarea id="resumenOutput" readonly></textarea>
+      </div>
       <div class="grid-btns">
         <button class="btn-action btn-copy" onclick="copiarResumen()">📋 Copiar</button>
         <button class="btn-action btn-wa" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
-        <button class="btn-action btn-pdf" onclick="exportarPDF()">📄 PDF</button>
-        <button class="btn-action btn-save" onclick="guardarResumen()">💾 Guardar</button>
+        <button class="btn-action btn-pdf" onclick="exportarPDF()">📄 Generar PDF</button>
+        <button class="btn-action btn-save" onclick="guardarResumen()">💾 Guardar .TXT</button>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </div>
 
-<div id="toast"></div>
+<div id="toast" class="oculto"></div>
 
-<script src="resumen.js?v=70"></script>
+<script src="resumen.js?v=200"></script>
 </body>
 </html>
