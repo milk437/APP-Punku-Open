@@ -1,7 +1,29 @@
 // ============================================================
-// CONFIGURACIÓN - OpenRouter API (EL USUARIO INGRESA SU CLAVE)
+// CONFIGURACIÓN - OpenRouter API
 // ============================================================
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+// ============================================================
+// PEDIR CLAVE AL USUARIO
+// ============================================================
+let OPENROUTER_API_KEY = sessionStorage.getItem('openrouter_key');
+
+if (!OPENROUTER_API_KEY) {
+    OPENROUTER_API_KEY = prompt(
+        '🔑 Ingresa tu clave de API de OpenRouter:\n\n' +
+        'La clave comienza con "sk-or-v1-..."\n' +
+        'Puedes obtenerla en: https://openrouter.ai/keys\n\n' +
+        '⚠️ La clave se guarda SOLO en tu navegador.',
+        'sk-or-v1-'
+    );
+    
+    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 10) {
+        sessionStorage.setItem('openrouter_key', OPENROUTER_API_KEY);
+        alert('✅ Clave guardada correctamente');
+    } else {
+        alert('⚠️ No se ingresó una clave válida');
+    }
+}
 
 // ============================================================
 // ELEMENTOS DOM
@@ -20,31 +42,7 @@ const loading = document.getElementById('loading');
 const toast = document.getElementById('toast');
 
 // ============================================================
-// PEDIR CLAVE AL USUARIO (SOLO UNA VEZ)
-// ============================================================
-let OPENROUTER_API_KEY = sessionStorage.getItem('openrouter_key');
-
-if (!OPENROUTER_API_KEY) {
-    OPENROUTER_API_KEY = prompt(
-        '🔑 Ingresa tu clave de API de OpenRouter:\n\n' +
-        'La clave comienza con "sk-or-v1-..."\n' +
-        'Puedes obtenerla en: https://openrouter.ai/keys\n\n' +
-        '⚠️ La clave se guarda SOLO en tu navegador (no se sube a ningún lado).',
-        'sk-or-v1-'
-    );
-    
-    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 10) {
-        sessionStorage.setItem('openrouter_key', OPENROUTER_API_KEY);
-        mostrarToast('✅ Clave guardada en el navegador', '#4CAF50');
-    } else {
-        mostrarToast('⚠️ No se ingresó una clave válida', '#ff6b6b');
-    }
-} else {
-    mostrarToast('✅ Clave cargada desde el navegador', '#4CAF50');
-}
-
-// ============================================================
-// MANEJO DE VISIBILIDAD (Libro / Enlace)
+// MANEJO DE VISIBILIDAD
 // ============================================================
 tipoRecurso.addEventListener('change', function() {
     const esLibro = this.value === 'libro';
@@ -54,25 +52,25 @@ tipoRecurso.addEventListener('change', function() {
 });
 
 // ============================================================
-// GENERAR RESUMEN CON IA (OpenRouter)
+// GENERAR RESUMEN
 // ============================================================
 btnGenerar.addEventListener('click', async function() {
     const tipo = tipoRecurso.value;
     const palabras = parseInt(longitudResumen.value);
     
-    // Verificar que hay clave
+    // Verificar clave
     if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.length < 10) {
-        mostrarToast('⚠️ Necesitas una clave de OpenRouter. Recarga la página.', '#ff6b6b');
+        alert('⚠️ Necesitas una clave de OpenRouter. Recarga la página.');
         return;
     }
     
     // Validar campos
     if (tipo === 'libro') {
         const t = tituloLibro.value.trim();
-        if (!t) { mostrarToast('⚠️ Ingresa el título del libro', '#ff6b6b'); tituloLibro.focus(); return; }
+        if (!t) { alert('⚠️ Ingresa el título del libro'); tituloLibro.focus(); return; }
     } else {
         const u = urlWeb.value.trim();
-        if (!u) { mostrarToast('⚠️ Ingresa la URL del artículo', '#ff6b6b'); urlWeb.focus(); return; }
+        if (!u) { alert('⚠️ Ingresa la URL del artículo'); urlWeb.focus(); return; }
     }
     
     // Mostrar loading
@@ -91,7 +89,7 @@ btnGenerar.addEventListener('click', async function() {
         mostrarToast('✅ ¡Resumen generado exitosamente!');
     } catch (error) {
         console.error('Error:', error);
-        mostrarToast('❌ Error: ' + error.message, '#ff6b6b');
+        alert('❌ Error: ' + error.message);
     } finally {
         loading.style.display = 'none';
         btnGenerar.disabled = false;
@@ -100,7 +98,7 @@ btnGenerar.addEventListener('click', async function() {
 });
 
 // ============================================================
-// CONSTRUIR PROMPT PARA OPENROUTER
+// CONSTRUIR PROMPT
 // ============================================================
 function construirPrompt(tipo, palabras) {
     let mensaje = `Eres un experto en educación y pedagogía. `;
@@ -120,7 +118,7 @@ function construirPrompt(tipo, palabras) {
 }
 
 // ============================================================
-// LLAMAR A OPENROUTER API
+// LLAMAR A OPENROUTER
 // ============================================================
 async function llamarOpenRouter(mensaje) {
     const response = await fetch(OPENROUTER_API_URL, {
@@ -132,9 +130,9 @@ async function llamarOpenRouter(mensaje) {
             'X-Title': 'Punku Open'
         },
         body: JSON.stringify({
-            model: 'mistralai/mistral-7b-instruct:free',
+            model: 'google/gemini-2.0-flash-exp:free',
             messages: [
-                { role: 'system', content: 'Eres un experto en educación y pedagogía. Generas resúmenes profesionales y estructurados.' },
+                { role: 'system', content: 'Eres un experto en educación y pedagogía. Generas resúmenes profesionales, detallados y estructurados.' },
                 { role: 'user', content: mensaje }
             ],
             max_tokens: 1200,
@@ -162,7 +160,7 @@ async function llamarOpenRouter(mensaje) {
 // ============================================================
 async function copiarResumen() {
     const texto = resumenOutput.value;
-    if (!texto) { mostrarToast('⚠️ No hay texto para copiar', '#ff6b6b'); return; }
+    if (!texto) { alert('⚠️ No hay texto para copiar'); return; }
     try {
         await navigator.clipboard.writeText(texto);
         mostrarToast('✅ ¡Copiado al portapapeles!');
@@ -178,7 +176,7 @@ async function copiarResumen() {
 // ============================================================
 function enviarWhatsApp() {
     const texto = resumenOutput.value;
-    if (!texto) { mostrarToast('⚠️ No hay texto para compartir', '#ff6b6b'); return; }
+    if (!texto) { alert('⚠️ No hay texto para compartir'); return; }
     const msg = encodeURIComponent(`📚 Punku Open - Resumen\n\n${texto}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
@@ -188,7 +186,7 @@ function enviarWhatsApp() {
 // ============================================================
 function guardarResumen() {
     const texto = resumenOutput.value;
-    if (!texto) { mostrarToast('⚠️ No hay texto para guardar', '#ff6b6b'); return; }
+    if (!texto) { alert('⚠️ No hay texto para guardar'); return; }
     const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -204,7 +202,7 @@ function guardarResumen() {
 // ============================================================
 function exportarPDF() {
     const texto = resumenOutput.value;
-    if (!texto) { mostrarToast('⚠️ No hay texto para exportar', '#ff6b6b'); return; }
+    if (!texto) { alert('⚠️ No hay texto para exportar'); return; }
     const ventana = window.open('', '_blank');
     ventana.document.write(`
         <html><head><title>Resumen Punku Open</title>
