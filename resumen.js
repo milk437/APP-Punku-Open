@@ -1,8 +1,7 @@
 // ============================================================
-// CONFIGURACIÓN - Hugging Face API (100% GRATIS)
+// CONFIGURACIÓN - OpenRouter API (EL USUARIO INGRESA SU CLAVE)
 // ============================================================
-const HF_API_KEY = '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';
-const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1';
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // ============================================================
 // ELEMENTOS DOM
@@ -21,6 +20,30 @@ const loading = document.getElementById('loading');
 const toast = document.getElementById('toast');
 
 // ============================================================
+// PEDIR CLAVE AL USUARIO (SOLO UNA VEZ)
+// ============================================================
+let OPENROUTER_API_KEY = sessionStorage.getItem('openrouter_key');
+
+if (!OPENROUTER_API_KEY) {
+    OPENROUTER_API_KEY = prompt(
+        '🔑 Ingresa tu clave de API de OpenRouter:\n\n' +
+        'La clave comienza con "sk-or-v1-..."\n' +
+        'Puedes obtenerla en: https://openrouter.ai/keys\n\n' +
+        '⚠️ La clave se guarda SOLO en tu navegador (no se sube a ningún lado).',
+        'sk-or-v1-'
+    );
+    
+    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 10) {
+        sessionStorage.setItem('openrouter_key', OPENROUTER_API_KEY);
+        mostrarToast('✅ Clave guardada en el navegador', '#4CAF50');
+    } else {
+        mostrarToast('⚠️ No se ingresó una clave válida', '#ff6b6b');
+    }
+} else {
+    mostrarToast('✅ Clave cargada desde el navegador', '#4CAF50');
+}
+
+// ============================================================
 // MANEJO DE VISIBILIDAD (Libro / Enlace)
 // ============================================================
 tipoRecurso.addEventListener('change', function() {
@@ -31,11 +54,17 @@ tipoRecurso.addEventListener('change', function() {
 });
 
 // ============================================================
-// GENERAR RESUMEN CON IA
+// GENERAR RESUMEN CON IA (OpenRouter)
 // ============================================================
 btnGenerar.addEventListener('click', async function() {
     const tipo = tipoRecurso.value;
     const palabras = parseInt(longitudResumen.value);
+    
+    // Verificar que hay clave
+    if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.length < 10) {
+        mostrarToast('⚠️ Necesitas una clave de OpenRouter. Recarga la página.', '#ff6b6b');
+        return;
+    }
     
     // Validar campos
     if (tipo === 'libro') {
@@ -54,8 +83,8 @@ btnGenerar.addEventListener('click', async function() {
     resumenOutput.value = '';
     
     try {
-        const prompt = construirPrompt(tipo, palabras);
-        const resumen = await llamarHuggingFace(prompt);
+        const mensaje = construirPrompt(tipo, palabras);
+        const resumen = await llamarOpenRouter(mensaje);
         resumenOutput.value = resumen;
         resultado.style.display = 'block';
         resultado.scrollIntoView({ behavior: 'smooth' });
@@ -71,48 +100,60 @@ btnGenerar.addEventListener('click', async function() {
 });
 
 // ============================================================
-// CONSTRUIR PROMPT PARA LA IA
+// CONSTRUIR PROMPT PARA OPENROUTER
 // ============================================================
 function construirPrompt(tipo, palabras) {
-    let prompt = `<s>[INST] Eres un experto en educación y pedagogía. `;
+    let mensaje = `Eres un experto en educación y pedagogía. `;
     if (tipo === 'libro') {
         const titulo = tituloLibro.value.trim();
         const autor = autorLibro.value.trim();
-        prompt += `Genera un resumen académico de aproximadamente ${palabras} palabras sobre la obra "${titulo}"`;
-        if (autor) prompt += ` del autor ${autor}`;
-        prompt += `. El resumen debe incluir: contexto histórico y literario, análisis de la trama, temas principales, personajes clave y su relevancia educativa.`;
+        mensaje += `Genera un resumen académico de aproximadamente ${palabras} palabras sobre la obra "${titulo}"`;
+        if (autor) mensaje += ` del autor ${autor}`;
+        mensaje += `. El resumen debe incluir: contexto histórico y literario, análisis de la trama, temas principales, personajes clave y su relevancia educativa.`;
     } else {
         const url = urlWeb.value.trim();
-        prompt += `Genera un resumen analítico de aproximadamente ${palabras} palabras del artículo disponible en: ${url}. `;
-        prompt += `Debes identificar: los argumentos principales, las evidencias presentadas, el contexto de publicación y la relevancia educativa del contenido.`;
+        mensaje += `Genera un resumen analítico de aproximadamente ${palabras} palabras del artículo disponible en: ${url}. `;
+        mensaje += `Debes identificar: los argumentos principales, las evidencias presentadas, el contexto de publicación y la relevancia educativa del contenido.`;
     }
-    prompt += ` El resumen debe ser profesional, estructurado en párrafos y útil para docentes. No incluyas saludos ni despedidas. [/INST]`;
-    return prompt;
+    mensaje += ` El resumen debe ser profesional, estructurado en párrafos y útil para docentes. No incluyas saludos ni despedidas.`;
+    return mensaje;
 }
 
 // ============================================================
-// LLAMAR A HUGGING FACE API
+// LLAMAR A OPENROUTER API
 // ============================================================
-async function llamarHuggingFace(prompt) {
-    const response = await fetch(HF_API_URL, {
+async function llamarOpenRouter(mensaje) {
+    const response = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${HF_API_KEY}`, 'Content-Type': 'application/json' },
+        headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://milk437.github.io',
+            'X-Title': 'Punku Open'
+        },
         body: JSON.stringify({
-            inputs: prompt,
-            parameters: { max_new_tokens: 1200, temperature: 0.7, top_p: 0.95, do_sample: true, return_full_text: false }
+            model: 'mistralai/mistral-7b-instruct:free',
+            messages: [
+                { role: 'system', content: 'Eres un experto en educación y pedagogía. Generas resúmenes profesionales y estructurados.' },
+                { role: 'user', content: mensaje }
+            ],
+            max_tokens: 1200,
+            temperature: 0.7
         })
     });
+    
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error en la API de Hugging Face');
+        throw new Error(errorData.error?.message || 'Error en la API de OpenRouter');
     }
+    
     const data = await response.json();
-    let texto = '';
-    if (Array.isArray(data) && data.length > 0) { texto = data[0].generated_text || ''; } 
-    else if (data.generated_text) { texto = data.generated_text; } 
-    else { texto = JSON.stringify(data); }
-    texto = texto.replace(/<s>/g, '').replace(/<\/s>/g, '').replace(/\[INST\]/g, '').replace(/\[\/INST\]/g, '').trim();
-    if (!texto) throw new Error('No se pudo generar el resumen');
+    const texto = data.choices?.[0]?.message?.content || '';
+    
+    if (!texto) {
+        throw new Error('No se pudo generar el resumen');
+    }
+    
     return texto;
 }
 
