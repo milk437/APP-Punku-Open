@@ -1,86 +1,693 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Punku Open | Resúmenes Pro</title>
-  <style>
-    :root { --bg: #0d0d0d; --gold: #ffd700; --card: #1a1a1a; --border: #444; }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--gold); margin: 0; padding-bottom: 50px; }
-    header { background: #111; padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
-    main { max-width: 700px; margin: 30px auto; background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid var(--border); }
-    .form-group { margin-bottom: 20px; }
-    label { display: block; margin-bottom: 8px; font-weight: bold; }
-    select, input, textarea { width: 100%; padding: 12px; background: #252525; border: 1px solid var(--border); color: white; border-radius: 8px; box-sizing: border-box; }
-    .btn-main { background: var(--gold); color: black; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 10px; }
-    #resultadoArea { margin-top: 30px; display: none; border-top: 1px solid var(--border); padding-top: 20px; }
-    #promptOutput { background: #000; color: #00ff41; font-family: 'Consolas', monospace; height: 180px; border: 1px solid var(--gold); resize: none; margin-bottom: 15px; font-size: 0.9rem; }
-    
-    /* Contenedor de botones de acción */
-    .grid-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .btn-action { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; text-align: center; text-decoration: none; font-size: 0.9rem; }
-    
-    /* Colores de botones */
-    .btn-copy { background: #444; }
-    .btn-wa { background: #25d366; }
-    .btn-gpt { background: #74aa9c; }
-    .btn-gemini { background: #4285f4; }
-    
-    /* Notificación flotante */
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px; font-weight: bold; display: none; z-index: 1000; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punku Open | Resúmenes con IA</title>
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --gold: #ffd700;
+            --card: #1a1a1a;
+            --border: #444;
+            --text: #e0e0e0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+            padding: 30px 0;
+            border-bottom: 3px solid var(--gold);
+            text-align: center;
+        }
+
+        header h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        /* Main sections */
+        main {
+            padding: 40px 0;
+        }
+
+        section {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ccc;
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: #252525;
+            border: 2px solid var(--border);
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 250px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            background: #0d0d0d;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+
+        /* Buttons */
+        .btn-main {
+            background: linear-gradient(135deg, var(--gold), #ffed4a);
+            color: #000;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            width: 100%;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-main:active {
+            transform: translateY(0);
+        }
+
+        .btn-main:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .grid-btns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-copy {
+            background: #555;
+        }
+        .btn-copy:hover {
+            background: #666;
+        }
+
+        .btn-wa {
+            background: #25d366;
+        }
+        .btn-wa:hover {
+            background: #20b85a;
+        }
+
+        .btn-pdf {
+            background: #dc3545;
+        }
+        .btn-pdf:hover {
+            background: #c82333;
+        }
+
+        .btn-save {
+            background: #17a2b8;
+        }
+        .btn-save:hover {
+            background: #138496;
+        }
+
+        .btn-gpt {
+            background: #10a37f;
+        }
+        .btn-gpt:hover {
+            background: #0d8b6b;
+        }
+
+        .btn-gemini {
+            background: #4285f4;
+        }
+        .btn-gemini:hover {
+            background: #3367d6;
+        }
+
+        /* Loading */
+        #loading {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #252525;
+            border-top: 4px solid var(--gold);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loading p {
+            color: #aaa;
+            font-size: 1rem;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gold);
+            color: #000;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Resultado */
+        #resultadoArea {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #resultadoArea label {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            section {
+                padding: 20px;
+            }
+            .grid-btns {
+                grid-template-columns: 1fr 1fr;
+            }
+            .btn-action {
+                font-size: 0.75rem;
+                padding: 10px 8px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <h1>Punku Open</h1>
-  <p>Resúmenes de Alto Nivel para el Magisterio</p>
-</header>
+    <header>
+        <div class="container">
+            <h1>📚 Punku Open</h1>
+            <p class="subtitle">Resúmenes con Inteligencia Artificial</p>
+        </div>
+    </header>
 
-<main>
-  <div class="form-group">
-    <label>Tipo de Recurso:</label>
-    <select id="tipoRecurso">
-      <option value="libro">📘 Obra Literaria / Libro</option>
-      <option value="enlace">🌐 Artículo Web / Noticia</option>
-    </select>
-  </div>
+    <main>
+        <div class="container">
 
-  <div id="seccionLibro">
-    <div class="form-group"><input type="text" id="tituloLibro" placeholder="Título de la obra"></div>
-    <div class="form-group"><input type="text" id="autorLibro" placeholder="Autor"></div>
-  </div>
+            <!-- ============ FORMULARIO ============ -->
+            <section>
+                <h2>✍️ Generar Resumen</h2>
 
-  <div id="seccionEnlace" style="display: none;">
-    <div class="form-group"><input type="url" id="urlWeb" placeholder="https://enlace-del-articulo.com"></div>
-  </div>
+                <form id="promptForm">
+                    <!-- Tipo de recurso -->
+                    <div class="form-group">
+                        <label for="tipoRecurso">Tipo de Recurso:</label>
+                        <select id="tipoRecurso" required>
+                            <option value="libro">📘 Obra Literaria / Libro</option>
+                            <option value="enlace">🌐 Artículo Web / Noticia</option>
+                        </select>
+                    </div>
 
-  <div class="form-group">
-    <label>Extensión:</label>
-    <select id="longitudResumen">
-      <option value="250">Sintético (250 palabras)</option>
-      <option value="500" selected>Estándar (500 palabras)</option>
-      <option value="850">Profundo (850 palabras)</option>
-    </select>
-  </div>
+                    <!-- Campos para libro -->
+                    <div id="seccionLibro" class="form-group">
+                        <label for="tituloLibro">Título de la obra:</label>
+                        <input type="text" id="tituloLibro" placeholder="Ej: Cien años de soledad">
 
-  <button class="btn-main" onclick="generarPromptResumen()">✨ Preparar Instrucción Maestra</button>
+                        <label for="autorLibro" style="margin-top: 15px;">Autor:</label>
+                        <input type="text" id="autorLibro" placeholder="Ej: Gabriel García Márquez">
+                    </div>
 
-  <div id="resultadoArea">
-    <label>📋 Instrucción Generada:</label>
-    <textarea id="promptOutput" readonly></textarea>
-    
-    <div class="grid-btns">
-      <button class="btn-action btn-copy" onclick="copiarPrompt()">📋 Copiar Prompt</button>
-      <button class="btn-action btn-wa" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
-      <a href="https://chat.openai.com/" target="_blank" class="btn-action btn-gpt">🤖 Abrir ChatGPT</a>
-      <a href="https://gemini.google.com/" target="_blank" class="btn-action btn-gemini">💎 Abrir Gemini</a>
-    </div>
-  </div>
-</main>
+                    <!-- Campos para enlace -->
+                    <div id="seccionEnlace" class="form-group" style="display: none;">
+                        <label for="urlWeb">URL del artículo:</label>
+                        <input type="url" id="urlWeb" placeholder="https://ejemplo.com/articulo">
+                    </div>
 
-<div id="toast">✅ ¡Copiado con éxito!</div>
+                    <!-- Extensión -->
+                    <div class="form-group">
+                        <label for="longitudResumen">Extensión del resumen:</label>
+                        <select id="longitudResumen">
+                            <option value="250">Sintético (250 palabras)</option>
+                            <option value="500" selected>Estándar (500 palabras)</option>
+                            <option value="850">Profundo (850 palabras)</option>
+                            <option value="1200">Extenso (1200 palabras)</option>
+                        </select>
+                    </div>
 
-<script src="resumen.js"></script>
+                    <!-- Botón generar -->
+                    <button type="submit" class="btn-main" id="btnGenerar">
+                        ✨ Generar Resumen con IA
+                    </button>
+                </form>
+
+                <!-- Loading -->
+                <div id="loading">
+                    <div class="spinner"></div>
+                    <p>⏳ Generando resumen... Esto puede tomar unos segundos</p>
+                </div>
+            </section>
+
+            <!-- ============ RESULTADO ============ -->
+            <section id="resultadoArea">
+                <h2>📋 Resumen Generado</h2>
+
+                <div class="form-group">
+                    <label>📝 Texto del resumen:</label>
+                    <textarea id="promptOutput" readonly></textarea>
+                </div>
+
+                <div class="grid-btns">
+                    <button class="btn-action btn-copy" onclick="copiarPrompt()">📋 Copiar</button>
+                    <button class="btn-action btn-wa" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
+                    <button class="btn-action btn-pdf" onclick="exportarPDF()">📄 PDF</button>
+                    <button class="btn-action btn-save" onclick="guardarPrompt()">💾 Guardar</button>
+                    <a href="https://chat.openai.com/" target="_blank" class="btn-action btn-gpt">🤖 ChatGPT</a>
+                    <a href="https://gemini.google.com/" target="_blank" class="btn-action btn-gemini">💎 Gemini</a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ============ TOAST ============ -->
+    <div id="toast"></div>
+
+    <!-- ============ SCRIPT ============ -->
+    <script>
+        // ============================================================
+        // CONFIGURACIÓN - CLAVE API DE HUGGING FACE (GRATUITA)
+        // ============================================================
+        const HF_API_KEY = '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';
+        const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1';
+
+        // ============================================================
+        // ELEMENTOS DOM
+        // ============================================================
+        const form = document.getElementById('promptForm');
+        const tipoRecurso = document.getElementById('tipoRecurso');
+        const seccionLibro = document.getElementById('seccionLibro');
+        const seccionEnlace = document.getElementById('seccionEnlace');
+        const tituloLibro = document.getElementById('tituloLibro');
+        const autorLibro = document.getElementById('autorLibro');
+        const urlWeb = document.getElementById('urlWeb');
+        const longitudResumen = document.getElementById('longitudResumen');
+        const resultadoArea = document.getElementById('resultadoArea');
+        const promptOutput = document.getElementById('promptOutput');
+        const loading = document.getElementById('loading');
+        const btnGenerar = document.getElementById('btnGenerar');
+        const toast = document.getElementById('toast');
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+
+        // Mostrar/ocultar campos según tipo
+        tipoRecurso.addEventListener('change', function() {
+            const isLibro = this.value === 'libro';
+            seccionLibro.style.display = isLibro ? 'block' : 'none';
+            seccionEnlace.style.display = isLibro ? 'none' : 'block';
+
+            if (isLibro) {
+                urlWeb.value = '';
+            } else {
+                tituloLibro.value = '';
+                autorLibro.value = '';
+            }
+        });
+
+        // Enviar formulario
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await generarResumen();
+        });
+
+        // ============================================================
+        // FUNCIÓN PRINCIPAL: GENERAR RESUMEN
+        // ============================================================
+        async function generarResumen() {
+            const tipo = tipoRecurso.value;
+            const longitud = parseInt(longitudResumen.value);
+
+            // Validar campos
+            if (tipo === 'libro' && !tituloLibro.value.trim()) {
+                mostrarToast('⚠️ Ingresa el título del libro', '#ff6b6b');
+                tituloLibro.focus();
+                return;
+            }
+
+            if (tipo === 'enlace' && !urlWeb.value.trim()) {
+                mostrarToast('⚠️ Ingresa la URL del artículo', '#ff6b6b');
+                urlWeb.focus();
+                return;
+            }
+
+            // Mostrar loading
+            loading.style.display = 'block';
+            btnGenerar.disabled = true;
+            btnGenerar.textContent = '⏳ Generando...';
+            resultadoArea.style.display = 'none';
+
+            try {
+                // Construir el prompt para Hugging Face
+                const prompt = construirPrompt(
+                    tipo,
+                    tituloLibro.value.trim(),
+                    autorLibro.value.trim(),
+                    urlWeb.value.trim(),
+                    longitud
+                );
+
+                // Llamar a la API de Hugging Face
+                const resumen = await llamarHuggingFace(prompt);
+
+                // Mostrar resultado
+                promptOutput.value = resumen;
+                resultadoArea.style.display = 'block';
+                mostrarToast('✅ ¡Resumen generado exitosamente!');
+
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error: ' + error.message, '#ff6b6b');
+            } finally {
+                loading.style.display = 'none';
+                btnGenerar.disabled = false;
+                btnGenerar.textContent = '✨ Generar Resumen con IA';
+            }
+        }
+
+        // ============================================================
+        // CONSTRUIR PROMPT
+        // ============================================================
+        function construirPrompt(tipo, titulo, autor, url, longitud) {
+            let prompt = `<s>[INST] Eres un experto en educación y pedagogía. `;
+
+            if (tipo === 'libro') {
+                prompt += `Genera un resumen académico de aproximadamente ${longitud} palabras sobre la obra "${titulo}"`;
+                if (autor) {
+                    prompt += ` del autor ${autor}`;
+                }
+                prompt +=
+                    `. El resumen debe incluir: contexto histórico y literario, análisis de la trama, temas principales, personajes clave y su relevancia educativa.`;
+            } else {
+                prompt +=
+                    `Genera un resumen analítico de aproximadamente ${longitud} palabras del artículo disponible en: ${url}. `;
+                prompt +=
+                    `Debes identificar: los argumentos principales, las evidencias presentadas, el contexto de publicación y la relevancia educativa del contenido.`;
+            }
+
+            prompt += ` El resumen debe ser profesional, estructurado en párrafos y útil para docentes. [/INST]`;
+
+            return prompt;
+        }
+
+        // ============================================================
+        // LLAMAR A HUGGING FACE API
+        // ============================================================
+        async function llamarHuggingFace(prompt) {
+            const response = await fetch(HF_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${HF_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    inputs: prompt,
+                    parameters: {
+                        max_new_tokens: 1200,
+                        temperature: 0.7,
+                        top_p: 0.95,
+                        do_sample: true,
+                        return_full_text: false
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error en la API de Hugging Face');
+            }
+
+            const data = await response.json();
+
+            // Extraer el texto generado
+            let texto = '';
+            if (Array.isArray(data) && data.length > 0) {
+                texto = data[0].generated_text || '';
+            } else if (data.generated_text) {
+                texto = data.generated_text;
+            } else {
+                texto = JSON.stringify(data);
+            }
+
+            // Limpiar el texto
+            texto = texto.replace(/<s>/g, '').replace(/<\/s>/g, '')
+                .replace(/\[INST\]/g, '').replace(/\[\/INST\]/g, '')
+                .trim();
+
+            if (!texto) {
+                throw new Error('No se pudo generar el resumen');
+            }
+
+            return texto;
+        }
+
+        // ============================================================
+        // BOTONES DE ACCIÓN
+        // ============================================================
+
+        function copiarPrompt() {
+            const texto = promptOutput.value;
+            if (!texto) {
+                mostrarToast('⚠️ No hay texto para copiar', '#ff6b6b');
+                return;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    mostrarToast('✅ ¡Copiado al portapapeles!');
+                }).catch(() => {
+                    copiarTextoFallback(texto);
+                });
+            } else {
+                copiarTextoFallback(texto);
+            }
+        }
+
+        function copiarTextoFallback(texto) {
+            const textarea = document.createElement('textarea');
+            textarea.value = texto;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            mostrarToast('✅ ¡Copiado al portapapeles!');
+        }
+
+        function enviarWhatsApp() {
+            const texto = promptOutput.value;
+            if (!texto) {
+                mostrarToast('⚠️ No hay texto para compartir', '#ff6b6b');
+                return;
+            }
+
+            const mensaje = encodeURIComponent(`📚 Punku Open - Resumen\n\n${texto}`);
+            window.open(`https://wa.me/?text=${mensaje}`, '_blank');
+        }
+
+        function guardarPrompt() {
+            const texto = promptOutput.value;
+            if (!texto) {
+                mostrarToast('⚠️ No hay texto para guardar', '#ff6b6b');
+                return;
+            }
+
+            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `resumen-punku-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            mostrarToast('💾 ¡Resumen guardado!');
+        }
+
+        function exportarPDF() {
+            const texto = promptOutput.value;
+            if (!texto) {
+                mostrarToast('⚠️ No hay texto para exportar', '#ff6b6b');
+                return;
+            }
+
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                    <html>
+                        <head>
+                            <title>Resumen Punku Open</title>
+                            <style>
+                                body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.8; }
+                                h1 { color: #ffd700; border-bottom: 2px solid #ffd700; padding-bottom: 10px; }
+                                .footer { margin-top: 30px; color: #888; font-size: 0.9em; border-top: 1px solid #ddd; padding-top: 10px; }
+                                .content { white-space: pre-wrap; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>📚 Punku Open - Resumen</h1>
+                            <div class="content">${texto.replace(/\n/g, '<br>')}</div>
+                            <div class="footer">Generado el ${new Date().toLocaleDateString('es-PE')} - Punku Open</div>
+                            <script>
+                                window.onload = function() { window.print(); }
+                            <\/script>
+                        </body>
+                    </html>
+                `);
+            ventana.document.close();
+        }
+
+        // ============================================================
+        // TOAST (NOTIFICACIONES)
+        // ============================================================
+        function mostrarToast(mensaje, color = '#ffd700') {
+            toast.textContent = mensaje;
+            toast.style.background = color;
+            toast.classList.add('show');
+
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============================================================
+        // INICIALIZAR
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLibro = tipoRecurso.value === 'libro';
+            seccionLibro.style.display = isLibro ? 'block' : 'none';
+            seccionEnlace.style.display = isLibro ? 'none' : 'block';
+        });
+    </script>
+
 </body>
 </html>
