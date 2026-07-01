@@ -69,7 +69,7 @@ DOM.btnGenerar.addEventListener('click', async () => {
         DOM.resultado.scrollIntoView({ behavior: 'smooth' });
         mostrarToast('✅ Documento generado');
     } catch (error) {
-        alert(`❌ Error crítico: ${error.message}`);
+        alert(`❌ Error: ${error.message}`);
     } finally {
         DOM.loading.classList.add('oculto');
         DOM.btnGenerar.disabled = false;
@@ -78,18 +78,18 @@ DOM.btnGenerar.addEventListener('click', async () => {
 });
 
 // ============================================================
-// CONSTRUCCIÓN DEL PROMPT ESTRUCTURAL
+// CONSTRUCCIÓN DEL PROMPT
 // ============================================================
 function construirPrompt(tipo, estructura) {
-    let base = 'Actúa como un experto en lingüística, crítico literario senior y científico cognitivo. Posees dominio absoluto del análisis textual, la semiótica, la retórica y la teoría crítica. Tu formación te permite deconstruir cualquier texto con precisión quirúrgica, identificando capas de significado, estructuras subyacentes, tensiones discursivas y marcos epistemológicos. Expresate con rigor académico, precisión conceptual, elegancia estilística y uso impecable del lenguaje. Tus análisis son profundos, matizados y reveladores, capaces de iluminar aspectos que el lector común no percibe. No simplifiques, no trivialices, no uses lenguaje coloquial. Ve a la esencia, desentraña lo implícito, conecta con tradiciones intelectuales y ofrece una perspectiva original y fundamentada. ';
-    
+    let base = `Actúa como un experto en lingüística, crítico literario senior y científico cognitivo. Posees dominio absoluto del análisis textual, la semiótica, la retórica y la teoría crítica. Tu formación te permite deconstruir cualquier texto con precisión quirúrgica, identificando capas de significado, estructuras subyacentes, tensiones discursivas y marcos epistemológicos. Expresate con rigor académico, precisión conceptual, elegancia estilística y uso impecable del lenguaje. Tus análisis son profundos, matizados y reveladores, capaces de iluminar aspectos que el lector común no percibe. No simplifiques, no trivialices, no uses lenguaje coloquial. Ve a la esencia, desentraña lo implícito, conecta con tradiciones intelectuales y ofrece una perspectiva original y fundamentada.`;
+
     let objetoAnalisis = '';
     if (tipo === 'libro') {
         const titulo = DOM.tituloLibro.value.trim();
         const autor = DOM.autorLibro.value.trim();
-        objetoAnalisis = `la obra literaria/libro "${titulo}"${autor ? ` de ${autor}` : ''}.`;
+        objetoAnalisis = `la obra literaria "${titulo}"${autor ? ` de ${autor}` : ''}.`;
     } else {
-        objetoAnalisis = `el texto o artículo disponible en: ${DOM.urlWeb.value.trim()}.`;
+        objetoAnalisis = `el texto disponible en: ${DOM.urlWeb.value.trim()}.`;
     }
 
     let formato = '';
@@ -97,27 +97,30 @@ function construirPrompt(tipo, estructura) {
     switch(estructura) {
         case 'sintesis':
             palabras = '150-200';
-            formato = `Genera un documento de aproximadamente ${palabras} palabras en UN (1) SOLO PÁRRAFO que contenga la idea principal, el propósito del autor y una conclusión puntual.`;
+            formato = `Genera un documento de aproximadamente ${palabras} palabras en UN (1) PÁRRAFO que contenga: idea principal, propósito del autor y conclusión puntual.`;
             break;
         case 'analisis':
             palabras = '350-450';
-            formato = `Genera un análisis riguroso de aproximadamente ${palabras} palabras estructurado en exactamente TRES (3) PÁRRAFOS: 1. Contexto histórico/discursivo. 2. Análisis de los argumentos o trama principal. 3. Conclusión crítica.`;
+            formato = `Genera un análisis de aproximadamente ${palabras} palabras en TRES (3) PÁRRAFOS: 1. Contexto histórico/discursivo. 2. Análisis de argumentos o trama. 3. Conclusión crítica.`;
             break;
         case 'critica':
             palabras = '500-650';
-            formato = `Genera una evaluación crítica de aproximadamente ${palabras} palabras estructurada en exactamente CUATRO (4) PÁRRAFOS: 1. Contexto de producción. 2. Análisis de evidencias o desarrollo de la trama. 3. Inferencia de temas subyacentes. 4. Relevancia educativa y aplicación para el área de Comunicación.`;
+            formato = `Genera una evaluación crítica de aproximadamente ${palabras} palabras en CUATRO (4) PÁRRAFOS: 1. Contexto de producción. 2. Análisis de evidencias. 3. Inferencia de temas subyacentes. 4. Relevancia educativa.`;
             break;
         case 'ejecutivo':
             palabras = '700-900';
-            formato = `Genera un informe ejecutivo de aproximadamente ${palabras} palabras estructurado en exactamente SEIS (6) PÁRRAFOS: 1. Contexto y marco general. 2. Análisis de estructura y contenido. 3. Argumentos principales y su desarrollo. 4. Subtextos y tensiones implícitas. 5. Implicancias educativas y pedagógicas. 6. Conclusiones y recomendaciones finales.`;
+            formato = `Genera un informe ejecutivo de aproximadamente ${palabras} palabras en SEIS (6) PÁRRAFOS: 1. Contexto general. 2. Análisis estructural. 3. Argumentos principales. 4. Subtextos y tensiones. 5. Implicancias. 6. Conclusiones y recomendaciones.`;
             break;
         case 'academico':
             palabras = '1000-1300';
-            formato = `Genera un documento académico de aproximadamente ${palabras} palabras estructurado en exactamente OCHO (8) PÁRRAFOS: 1. Introducción y contextualización. 2. Marco histórico y sociocultural. 3. Análisis estructural del contenido. 4. Desarrollo de argumentos centrales. 5. Exploración de temas transversales. 6. Análisis crítico y postura fundamentada. 7. Relevancia para el currículo educativo. 8. Conclusiones y proyecciones pedagógicas.`;
+            formato = `Genera un documento académico de aproximadamente ${palabras} palabras en OCHO (8) PÁRRAFOS: 1. Introducción. 2. Marco histórico. 3. Análisis estructural. 4. Argumentos centrales. 5. Temas transversales. 6. Análisis crítico. 7. Relevancia curricular. 8. Conclusiones y proyecciones.`;
             break;
+        default:
+            palabras = '500';
+            formato = `Genera un resumen de aproximadamente ${palabras} palabras con la estructura que consideres más adecuada.`;
     }
 
-    return `${base} Tu tarea es analizar ${objetoAnalisis} ${formato} No uses subtítulos para cada párrafo, redáctalo en bloque continuo respetando los saltos de línea. No incluyas saludos, introducciones banales ni texto de relleno. Ve directo al análisis.`;
+    return `${base} Tu tarea es analizar ${objetoAnalisis} ${formato} No uses subtítulos, redáctalo en bloque continuo. No incluyas saludos ni texto de relleno. Ve directo al análisis.`;
 }
 
 // ============================================================
@@ -142,14 +145,14 @@ async function llamarOpenRouter(mensaje) {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Fallo en la comunicación con la API.');
+        throw new Error(errorData.error?.message || 'Error en la API.');
     }
     const data = await response.json();
     return data.choices?.[0]?.message?.content?.trim() || '';
 }
 
 // ============================================================
-// UTILIDADES - COPIAR
+// UTILIDADES
 // ============================================================
 function mostrarToast(mensaje) {
     DOM.toast.textContent = mensaje;
@@ -174,7 +177,7 @@ function enviarWhatsApp() {
         alert('⚠️ No hay texto para compartir');
         return;
     }
-    const msg = encodeURIComponent(`📚 Análisis Estructural\n\n${DOM.resumenOutput.value}`);
+    const msg = encodeURIComponent(`📚 Punku Open - Análisis\n\n${DOM.resumenOutput.value}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
@@ -210,7 +213,6 @@ function exportarPDF() {
         day: 'numeric'
     });
 
-    // Limpiar y formatear el texto
     const parrafos = texto.split('\n').filter(p => p.trim() !== '');
     const textoFormateado = parrafos.map(p => `<p>${p.trim()}</p>`).join('');
 
@@ -222,9 +224,7 @@ function exportarPDF() {
     <meta charset="UTF-8">
     <title>Análisis - Punku Open</title>
     <style>
-        @page {
-            margin: 2.5cm;
-        }
+        @page { margin: 2.5cm; }
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 11pt;
@@ -234,10 +234,7 @@ function exportarPDF() {
             margin: 0;
             padding: 0;
         }
-        .container {
-            max-width: 100%;
-            padding: 0;
-        }
+        .container { max-width: 100%; padding: 0; }
         .header {
             text-align: center;
             border-bottom: 2px solid #1a1a1a;
@@ -266,9 +263,7 @@ function exportarPDF() {
             display: inline-block;
             margin: 0 8px;
         }
-        .contenido {
-            text-align: justify;
-        }
+        .contenido { text-align: justify; }
         .contenido p {
             margin: 0 0 12px 0;
             text-indent: 1.5cm;
@@ -286,10 +281,7 @@ function exportarPDF() {
             font-weight: 600;
             color: #1a1a1a;
         }
-        @media print {
-            body { margin: 0; }
-            .container { padding: 0; }
-        }
+        @media print { body { margin: 0; } .container { padding: 0; } }
     </style>
 </head>
 <body>
@@ -310,11 +302,7 @@ function exportarPDF() {
             <span class="logo">Punku Open - Milton Ruiz</span>
         </div>
     </div>
-    <script>
-        window.onload = function() {
-            window.print();
-        }
-    <\/script>
+    <script>window.onload = function() { window.print(); }</script>
 </body>
 </html>
     `);
