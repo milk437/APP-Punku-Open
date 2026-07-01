@@ -1,124 +1,127 @@
 // ============================================================
-// CONFIGURACIÓN - OpenRouter API
+// CONFIGURACIÓN API
 // ============================================================
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
-// ============================================================
-// PEDIR CLAVE AL USUARIO
-// ============================================================
 let OPENROUTER_API_KEY = sessionStorage.getItem('openrouter_key');
-
-if (!OPENROUTER_API_KEY) {
+if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.length < 20) {
     OPENROUTER_API_KEY = prompt(
-        '🔑 Ingresa tu clave de API de OpenRouter:\n\n' +
-        'La clave comienza con "sk-or-v1-..."\n' +
-        'Puedes obtenerla en: https://openrouter.ai/keys\n\n' +
-        '⚠️ La clave se guarda SOLO en tu navegador.',
-        'sk-or-v1-'
+        '🔑 Ingresa tu clave de API de OpenRouter (sk-or-v1-...):\nSolo se solicitará una vez y quedará en tu navegador.'
     );
-    
-    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 10) {
+    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 20) {
         sessionStorage.setItem('openrouter_key', OPENROUTER_API_KEY);
-        alert('✅ Clave guardada correctamente');
     } else {
-        alert('⚠️ No se ingresó una clave válida');
+        alert('⚠️ Clave inválida. El sistema no funcionará correctamente.');
     }
 }
 
 // ============================================================
 // ELEMENTOS DOM
 // ============================================================
-const tipoRecurso = document.getElementById('tipoRecurso');
-const seccionLibro = document.getElementById('seccionLibro');
-const seccionEnlace = document.getElementById('seccionEnlace');
-const tituloLibro = document.getElementById('tituloLibro');
-const autorLibro = document.getElementById('autorLibro');
-const urlWeb = document.getElementById('urlWeb');
-const longitudResumen = document.getElementById('longitudResumen');
-const resumenOutput = document.getElementById('resumenOutput');
-const resultado = document.getElementById('resultado');
-const btnGenerar = document.getElementById('btnGenerar');
-const loading = document.getElementById('loading');
-const toast = document.getElementById('toast');
+const DOM = {
+    tipoRecurso: document.getElementById('tipoRecurso'),
+    seccionLibro: document.getElementById('seccionLibro'),
+    seccionEnlace: document.getElementById('seccionEnlace'),
+    tituloLibro: document.getElementById('tituloLibro'),
+    autorLibro: document.getElementById('autorLibro'),
+    urlWeb: document.getElementById('urlWeb'),
+    tipoEstructura: document.getElementById('tipoEstructura'),
+    resumenOutput: document.getElementById('resumenOutput'),
+    resultado: document.getElementById('resultado'),
+    btnGenerar: document.getElementById('btnGenerar'),
+    loading: document.getElementById('loading'),
+    toast: document.getElementById('toast')
+};
 
 // ============================================================
-// MANEJO DE VISIBILIDAD
+// EVENTOS
 // ============================================================
-tipoRecurso.addEventListener('change', function() {
-    const esLibro = this.value === 'libro';
-    seccionLibro.style.display = esLibro ? 'block' : 'none';
-    seccionEnlace.style.display = esLibro ? 'none' : 'block';
-    if (esLibro) { urlWeb.value = ''; } else { tituloLibro.value = ''; autorLibro.value = ''; }
+DOM.tipoRecurso.addEventListener('change', (e) => {
+    const esLibro = e.target.value === 'libro';
+    DOM.seccionLibro.classList.toggle('oculto', !esLibro);
+    DOM.seccionEnlace.classList.toggle('oculto', esLibro);
 });
 
-// ============================================================
-// GENERAR RESUMEN
-// ============================================================
-btnGenerar.addEventListener('click', async function() {
-    const tipo = tipoRecurso.value;
-    const palabras = parseInt(longitudResumen.value);
-    
-    // Verificar clave
-    if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.length < 10) {
-        alert('⚠️ Necesitas una clave de OpenRouter. Recarga la página.');
-        return;
+DOM.btnGenerar.addEventListener('click', async () => {
+    const tipo = DOM.tipoRecurso.value;
+    const estructura = DOM.tipoEstructura.value;
+
+    if (tipo === 'libro' && !DOM.tituloLibro.value.trim()) {
+        alert('⚠️ Ingresa el título de la obra.');
+        return DOM.tituloLibro.focus();
     }
-    
-    // Validar campos
-    if (tipo === 'libro') {
-        const t = tituloLibro.value.trim();
-        if (!t) { alert('⚠️ Ingresa el título del libro'); tituloLibro.focus(); return; }
-    } else {
-        const u = urlWeb.value.trim();
-        if (!u) { alert('⚠️ Ingresa la URL del artículo'); urlWeb.focus(); return; }
+    if (tipo === 'enlace' && !DOM.urlWeb.value.trim()) {
+        alert('⚠️ Ingresa la URL del texto.');
+        return DOM.urlWeb.focus();
     }
-    
-    // Mostrar loading
-    loading.style.display = 'block';
-    btnGenerar.disabled = true;
-    btnGenerar.textContent = '⏳ Generando...';
-    resultado.style.display = 'none';
-    resumenOutput.value = '';
-    
+
+    DOM.loading.classList.remove('oculto');
+    DOM.resultado.classList.add('oculto');
+    DOM.btnGenerar.disabled = true;
+    DOM.btnGenerar.textContent = '⏳ Procesando...';
+    DOM.resumenOutput.value = '';
+
     try {
-        const mensaje = construirPrompt(tipo, palabras);
-        const resumen = await llamarOpenRouter(mensaje);
-        resumenOutput.value = resumen;
-        resultado.style.display = 'block';
-        resultado.scrollIntoView({ behavior: 'smooth' });
-        mostrarToast('✅ ¡Resumen generado exitosamente!');
+        const promptText = construirPrompt(tipo, estructura);
+        const respuesta = await llamarOpenRouter(promptText);
+        DOM.resumenOutput.value = respuesta;
+        DOM.resultado.classList.remove('oculto');
+        DOM.resultado.scrollIntoView({ behavior: 'smooth' });
+        mostrarToast('✅ Documento generado');
     } catch (error) {
-        console.error('Error:', error);
-        alert('❌ Error: ' + error.message);
+        alert(`❌ Error crítico: ${error.message}`);
     } finally {
-        loading.style.display = 'none';
-        btnGenerar.disabled = false;
-        btnGenerar.textContent = '✨ Generar Resumen con IA';
+        DOM.loading.classList.add('oculto');
+        DOM.btnGenerar.disabled = false;
+        DOM.btnGenerar.textContent = '✨ Procesar con IA';
     }
 });
 
 // ============================================================
-// CONSTRUIR PROMPT
+// CONSTRUCCIÓN DEL PROMPT ESTRUCTURAL
 // ============================================================
-function construirPrompt(tipo, palabras) {
-    let mensaje = `Eres un experto en educación y pedagogía. `;
+function construirPrompt(tipo, estructura) {
+    let base = 'Actúa como un experto docente en lingüística y evaluación por competencias. Expresate con rigor académico, precisión conceptual y uso correcto del lenguaje. ';
+    
+    let objetoAnalisis = '';
     if (tipo === 'libro') {
-        const titulo = tituloLibro.value.trim();
-        const autor = autorLibro.value.trim();
-        mensaje += `Genera un resumen académico de aproximadamente ${palabras} palabras sobre la obra "${titulo}"`;
-        if (autor) mensaje += ` del autor ${autor}`;
-        mensaje += `. El resumen debe incluir: contexto histórico y literario, análisis de la trama, temas principales, personajes clave y su relevancia educativa.`;
+        const titulo = DOM.tituloLibro.value.trim();
+        const autor = DOM.autorLibro.value.trim();
+        objetoAnalisis = `la obra literaria/libro "${titulo}"${autor ? ` de ${autor}` : ''}.`;
     } else {
-        const url = urlWeb.value.trim();
-        mensaje += `Genera un resumen analítico de aproximadamente ${palabras} palabras del artículo disponible en: ${url}. `;
-        mensaje += `Debes identificar: los argumentos principales, las evidencias presentadas, el contexto de publicación y la relevancia educativa del contenido.`;
+        objetoAnalisis = `el texto o artículo disponible en: ${DOM.urlWeb.value.trim()}.`;
     }
-    mensaje += ` El resumen debe ser profesional, estructurado en párrafos y útil para docentes. No incluyas saludos ni despedidas.`;
-    return mensaje;
+
+    let formato = '';
+    let palabras = '';
+    switch(estructura) {
+        case 'sintesis':
+            palabras = '150-200';
+            formato = `Genera un documento de aproximadamente ${palabras} palabras en UN (1) SOLO PÁRRAFO que contenga la idea principal, el propósito del autor y una conclusión puntual.`;
+            break;
+        case 'analisis':
+            palabras = '350-450';
+            formato = `Genera un análisis riguroso de aproximadamente ${palabras} palabras estructurado en exactamente TRES (3) PÁRRAFOS: 1. Contexto histórico/discursivo. 2. Análisis de los argumentos o trama principal. 3. Conclusión crítica.`;
+            break;
+        case 'critica':
+            palabras = '500-650';
+            formato = `Genera una evaluación crítica de aproximadamente ${palabras} palabras estructurada en exactamente CUATRO (4) PÁRRAFOS: 1. Contexto de producción. 2. Análisis de evidencias o desarrollo de la trama. 3. Inferencia de temas subyacentes. 4. Relevancia educativa y aplicación para el área de Comunicación.`;
+            break;
+        case 'ejecutivo':
+            palabras = '700-900';
+            formato = `Genera un informe ejecutivo de aproximadamente ${palabras} palabras estructurado en exactamente SEIS (6) PÁRRAFOS: 1. Contexto y marco general. 2. Análisis de estructura y contenido. 3. Argumentos principales y su desarrollo. 4. Subtextos y tensiones implícitas. 5. Implicancias educativas y pedagógicas. 6. Conclusiones y recomendaciones finales.`;
+            break;
+        case 'academico':
+            palabras = '1000-1300';
+            formato = `Genera un documento académico de aproximadamente ${palabras} palabras estructurado en exactamente OCHO (8) PÁRRAFOS: 1. Introducción y contextualización. 2. Marco histórico y sociocultural. 3. Análisis estructural del contenido. 4. Desarrollo de argumentos centrales. 5. Exploración de temas transversales. 6. Análisis crítico y postura fundamentada. 7. Relevancia para el currículo educativo. 8. Conclusiones y proyecciones pedagógicas.`;
+            break;
+    }
+
+    return `${base} Tu tarea es analizar ${objetoAnalisis} ${formato} No uses subtítulos para cada párrafo, redáctalo en bloque continuo respetando los saltos de línea. No incluyas saludos, introducciones banales ni texto de relleno. Ve directo al análisis.`;
 }
 
 // ============================================================
-// LLAMAR A OPENROUTER CON MODELO openrouter/free
+// CONEXIÓN LLM
 // ============================================================
 async function llamarOpenRouter(mensaje) {
     const response = await fetch(OPENROUTER_API_URL, {
@@ -126,110 +129,202 @@ async function llamarOpenRouter(mensaje) {
         headers: {
             'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
             'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://milk437.github.io',
+            'HTTP-Referer': 'https://milk437.github.io/APP-Punku-Open/',
             'X-Title': 'Punku Open'
         },
         body: JSON.stringify({
-            // ✅ MODELO QUE SÍ FUNCIONA Y ES GRATIS
             model: 'openrouter/free',
-            messages: [
-                { role: 'system', content: 'Eres un experto en educación y pedagogía. Generas resúmenes profesionales, detallados y estructurados.' },
-                { role: 'user', content: mensaje }
-            ],
-            max_tokens: 1200,
+            messages: [{ role: 'user', content: mensaje }],
+            max_tokens: 4000,
             temperature: 0.7
         })
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Error en la API de OpenRouter');
+        throw new Error(errorData.error?.message || 'Fallo en la comunicación con la API.');
     }
-    
     const data = await response.json();
-    const texto = data.choices?.[0]?.message?.content || '';
-    
-    if (!texto) {
-        throw new Error('No se pudo generar el resumen');
-    }
-    
-    return texto;
+    return data.choices?.[0]?.message?.content?.trim() || '';
 }
 
 // ============================================================
-// COPIAR TEXTO
+// UTILIDADES - COPIAR
 // ============================================================
+function mostrarToast(mensaje) {
+    DOM.toast.textContent = mensaje;
+    DOM.toast.classList.remove('oculto');
+    clearTimeout(DOM.toast._timeout);
+    DOM.toast._timeout = setTimeout(() => DOM.toast.classList.add('oculto'), 3000);
+}
+
 async function copiarResumen() {
-    const texto = resumenOutput.value;
-    if (!texto) { alert('⚠️ No hay texto para copiar'); return; }
     try {
-        await navigator.clipboard.writeText(texto);
-        mostrarToast('✅ ¡Copiado al portapapeles!');
-    } catch (err) {
-        resumenOutput.select();
+        await navigator.clipboard.writeText(DOM.resumenOutput.value);
+        mostrarToast('📋 Copiado al portapapeles');
+    } catch {
+        DOM.resumenOutput.select();
         document.execCommand('copy');
-        mostrarToast('✅ ¡Copiado al portapapeles!');
+        mostrarToast('📋 Copiado al portapapeles');
     }
 }
 
-// ============================================================
-// ENVIAR POR WHATSAPP
-// ============================================================
 function enviarWhatsApp() {
-    const texto = resumenOutput.value;
-    if (!texto) { alert('⚠️ No hay texto para compartir'); return; }
-    const msg = encodeURIComponent(`📚 Punku Open - Resumen\n\n${texto}`);
+    if (!DOM.resumenOutput.value) {
+        alert('⚠️ No hay texto para compartir');
+        return;
+    }
+    const msg = encodeURIComponent(`📚 Análisis Estructural\n\n${DOM.resumenOutput.value}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
-// ============================================================
-// GUARDAR COMO ARCHIVO .TXT
-// ============================================================
 function guardarResumen() {
-    const texto = resumenOutput.value;
-    if (!texto) { alert('⚠️ No hay texto para guardar'); return; }
-    const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    if (!DOM.resumenOutput.value) {
+        alert('⚠️ No hay texto para guardar');
+        return;
+    }
+    const blob = new Blob([DOM.resumenOutput.value], { type: 'text/plain;charset=utf-8' });
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `resumen-punku-${Date.now()}.txt`;
+    a.href = URL.createObjectURL(blob);
+    a.download = `Analisis_${Date.now()}.txt`;
     a.click();
-    URL.revokeObjectURL(url);
-    mostrarToast('💾 ¡Resumen guardado!');
+    URL.revokeObjectURL(a.href);
+    mostrarToast('💾 Archivo guardado');
 }
 
 // ============================================================
-// EXPORTAR A PDF
+// EXPORTAR PDF PROFESIONAL
 // ============================================================
 function exportarPDF() {
-    const texto = resumenOutput.value;
-    if (!texto) { alert('⚠️ No hay texto para exportar'); return; }
+    const texto = DOM.resumenOutput.value;
+    if (!texto) {
+        alert('⚠️ No hay texto para exportar');
+        return;
+    }
+
+    const titulo = DOM.tituloLibro.value.trim() || 'Documento de Análisis';
+    const autor = DOM.autorLibro.value.trim() || 'Análisis de Recurso Web';
+    const fecha = new Date().toLocaleDateString('es-PE', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    // Limpiar y formatear el texto
+    const parrafos = texto.split('\n').filter(p => p.trim() !== '');
+    const textoFormateado = parrafos.map(p => `<p>${p.trim()}</p>`).join('');
+
     const ventana = window.open('', '_blank');
     ventana.document.write(`
-        <html><head><title>Resumen Punku Open</title>
-        <style>body{font-family:'Segoe UI',Arial,sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.8}
-        h1{color:#ffd700;border-bottom:2px solid #ffd700;padding-bottom:10px}
-        .footer{margin-top:30px;color:#888;font-size:0.9em;border-top:1px solid #ddd;padding-top:10px}
-        .content{white-space:pre-wrap}</style></head>
-        <body><h1>📚 Punku Open - Resumen</h1>
-        <div class="content">${texto.replace(/\n/g, '<br>')}</div>
-        <div class="footer">Generado el ${new Date().toLocaleDateString('es-PE')} - Punku Open</div>
-        <script>window.onload=function(){window.print()}<\\/script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Análisis - Punku Open</title>
+    <style>
+        @page {
+            margin: 2.5cm;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #1a1a1a;
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 100%;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #1a1a1a;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 4px 0;
+            letter-spacing: 0.5px;
+        }
+        .header .subtitulo {
+            font-size: 11pt;
+            color: #444;
+            margin: 4px 0;
+            font-weight: normal;
+        }
+        .header .meta {
+            font-size: 10pt;
+            color: #666;
+            margin-top: 6px;
+        }
+        .header .meta span {
+            display: inline-block;
+            margin: 0 8px;
+        }
+        .contenido {
+            text-align: justify;
+        }
+        .contenido p {
+            margin: 0 0 12px 0;
+            text-indent: 1.5cm;
+            text-align: justify;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 12px;
+            border-top: 1px solid #ccc;
+            text-align: center;
+            font-size: 9pt;
+            color: #888;
+        }
+        .footer .logo {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        @media print {
+            body { margin: 0; }
+            .container { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Punku Open</h1>
+            <div class="subtitulo">Análisis Estructural con IA</div>
+            <div class="meta">
+                <span><strong>Obra:</strong> ${titulo}</span>
+                <span><strong>Autor:</strong> ${autor}</span>
+                <span><strong>Fecha:</strong> ${fecha}</span>
+            </div>
+        </div>
+        <div class="contenido">
+            ${textoFormateado}
+        </div>
+        <div class="footer">
+            <span class="logo">Punku Open - Milton Ruiz</span>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    <\/script>
+</body>
+</html>
     `);
     ventana.document.close();
 }
 
 // ============================================================
-// TOAST (NOTIFICACIONES)
+// EXPONER FUNCIONES GLOBALES
 // ============================================================
-function mostrarToast(mensaje, color = '#ffd700') {
-    toast.textContent = mensaje;
-    toast.style.background = color;
-    toast.style.display = 'block';
-    toast.style.opacity = '1';
-    clearTimeout(toast._timeout);
-    toast._timeout = setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => { toast.style.display = 'none'; }, 300);
-    }, 3000);
-}
+window.copiarResumen = copiarResumen;
+window.enviarWhatsApp = enviarWhatsApp;
+window.guardarResumen = guardarResumen;
+window.exportarPDF = exportarPDF;
