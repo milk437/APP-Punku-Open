@@ -118,7 +118,7 @@ function construirPrompt(tipo, palabras) {
 }
 
 // ============================================================
-// LLAMAR A OPENROUTER
+// LLAMAR A OPENROUTER CON MODELO openrouter/free
 // ============================================================
 async function llamarOpenRouter(mensaje) {
     const response = await fetch(OPENROUTER_API_URL, {
@@ -130,7 +130,8 @@ async function llamarOpenRouter(mensaje) {
             'X-Title': 'Punku Open'
         },
         body: JSON.stringify({
-            model: 'google/gemini-2.0-flash-exp:free',
+            // ✅ MODELO QUE SÍ FUNCIONA Y ES GRATIS
+            model: 'openrouter/free',
             messages: [
                 { role: 'system', content: 'Eres un experto en educación y pedagogía. Generas resúmenes profesionales, detallados y estructurados.' },
                 { role: 'user', content: mensaje }
