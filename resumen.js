@@ -3,13 +3,13 @@
 // ============================================================
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
-let OPENROUTER_API_KEY = sessionStorage.getItem('openrouter_key');
+let OPENROUTER_API_KEY = localStorage.getItem('openrouter_key');
 if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.length < 20) {
     OPENROUTER_API_KEY = prompt(
-        '🔑 Ingresa tu clave de API de OpenRouter (sk-or-v1-...):\nSolo se solicitará una vez y quedará en tu navegador.'
+        '🔑 Ingresa tu clave de API de OpenRouter (sk-or-v1-...):\nSolo se solicitará una vez y quedará guardada en tu navegador.'
     );
     if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 20) {
-        sessionStorage.setItem('openrouter_key', OPENROUTER_API_KEY);
+        localStorage.setItem('openrouter_key', OPENROUTER_API_KEY);
     } else {
         alert('⚠️ Clave inválida. El sistema no funcionará correctamente.');
     }
