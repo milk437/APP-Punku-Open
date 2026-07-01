@@ -81,7 +81,7 @@ DOM.btnGenerar.addEventListener('click', async () => {
 // CONSTRUCCIÓN DEL PROMPT ESTRUCTURAL
 // ============================================================
 function construirPrompt(tipo, estructura) {
-    let base = 'Actúa como un experto docente en lingüística y evaluación por competencias. Expresate con rigor académico, precisión conceptual y uso correcto del lenguaje. ';
+    let base = 'Actúa como un experto en lingüística, crítico literario senior y científico cognitivo. Posees dominio absoluto del análisis textual, la semiótica, la retórica y la teoría crítica. Tu formación te permite deconstruir cualquier texto con precisión quirúrgica, identificando capas de significado, estructuras subyacentes, tensiones discursivas y marcos epistemológicos. Expresate con rigor académico, precisión conceptual, elegancia estilística y uso impecable del lenguaje. Tus análisis son profundos, matizados y reveladores, capaces de iluminar aspectos que el lector común no percibe. No simplifiques, no trivialices, no uses lenguaje coloquial. Ve a la esencia, desentraña lo implícito, conecta con tradiciones intelectuales y ofrece una perspectiva original y fundamentada. ';
     
     let objetoAnalisis = '';
     if (tipo === 'libro') {
