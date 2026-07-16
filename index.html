@@ -250,7 +250,7 @@
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbzVrrMwMNZ60zvXCE_Ch9Bnas_FdjNmqDDH434LDQNaxyNRVqjhF_vJZt-0KOl22uGB/exec', '_blank')" data-message="Crea unidades didácticas por competencias.">
-        <span class="icon">📝</span> Unidades de Aprendizaje
+        <span class="icon">📚</span> Unidades de Aprendizaje
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbznpDMi4t3hqZiLphL6Cn_A2FslvCwywo1BIRTUxaB4QjW_NZ-SRlgp17E6E1nWkyhCgA/exec', '_blank')" data-message="Desarrolla proyectos basados en problemas.">
@@ -258,7 +258,7 @@
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbw8SEV5O6InVjxh_uojQRW5l_n6TLjAaTLySOqt3Ld_kv7I0Ob5KfXqGZE9JAgWgQEt/exec', '_blank')" data-message="Gestiona tus sesiones de clase.">
-        <span class="icon">🚪</span> Sesiones de Aprendizaje
+        <span class="icon">🏫</span> Sesiones de Aprendizaje
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbzpGpFxovQIX9P3y7KHuap7jZj2dy4rTAtQeUUHKqfg26g3T-OXTeT49c3Vq6f6Rpti/exec')" data-message="Genera resúmenes automáticos con IA.">
@@ -278,7 +278,7 @@
       </button>
       
       <button onclick="window.open('https://milk437.github.io/PUNKUOPEN-DICCIONARIO/', '_blank')" data-message="Amplía tu vocabulario pedagógico.">
-        <span class="icon">📖</span> Diccionario
+        <span class="icon">📘</span> Diccionario
       </button>
 
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbwol5L6JC7lMQ2Oal-lTGzRYr3AMvUHj3KR9HpbgYXQPET1R7JajHafztkv9k2xcJPtUw/exec', '_blank')" data-message="Explora Punku Ñawi para nuevas funcionalidades.">
@@ -286,7 +286,7 @@
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbymq8oktuECgdow55JKcocBKL5pVj-MpAoXnbRS8OSqyKxat5kWJe6ioWmr0m67Ouc/exec', '_blank')" data-message="Accede al nuevo recurso del Cuaderno de Campo Digital.">
-        <span class="icon">📝</span> Cuaderno Digital del Tutor
+        <span class="icon">📔</span> Cuaderno Digital del Tutor
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbw_hQ5wRqW4O44nP-VHyUwUjBrMs2I6myhIA0CSgQD9Ggd41m9INab6yBU4ztukOv7tig/exec', '_blank')" data-message="Accede al módulo de Control de Asistencia Digital de Punku Open.">
@@ -294,7 +294,7 @@
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbyNzocef-AKlOz0qY5tGFHy7c4M2xdOOKoO9aLyRAebQ23LGWTxdKw_IgUYIS4vCZjGDg/exec', '_blank')" data-message="Accede al módulo de Fichas de Trabajo de Punku Open.">
-        <span class="icon">📄</span> Punku Lector
+        <span class="icon">📖</span> Punku Lector
       </button>
       
       <button onclick="window.open('https://script.google.com/macros/s/AKfycbzyVA5DQiuf1iSMV1KpjiH4BNrqIHxNpg6HUdo4jdibWt9yyNs8wrlNSS-q7hu9PmZz/exec', '_blank')" data-message="Accede al módulo de Punku Open IA.">
@@ -318,18 +318,53 @@
       });
     }
 
-    const usuario = localStorage.getItem("usuarioActivoPunku");
+    // ⚠️ Debe ser la MISMA URL que pusiste en login.js
+    const AUTH_URL = "https://script.google.com/macros/s/AKfycbzq2M9p4zVWipETeb048NEVXGgY42J9ovCygcHJU2dind51cj3Id4gspD_S7LIbThsLkg/exec";
+
     const saludoUsuarioElement = document.getElementById("usuarioActivo");
     const hoverMessageBar = document.getElementById("hover-message-bar");
 
-    if (!usuario) {
-      location.href = "login.html"; 
-    } else {
-      saludoUsuarioElement.innerHTML = `👤 Bienvenido, <strong>${usuario}</strong>.`;
-      setupButtonHoverMessages(); 
-    }
+    (async function verificarSesion() {
+      const token = localStorage.getItem("punkuAuthToken");
+      const usuario = localStorage.getItem("usuarioActivoPunku");
+
+      if (!token || !usuario) {
+        location.href = "login.html";
+        return;
+      }
+
+      try {
+        const resp = await fetch(AUTH_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ accion: "verificar", token: token })
+        });
+        const data = await resp.json();
+
+        if (data.ok) {
+          saludoUsuarioElement.innerHTML = `👤 Bienvenido, <strong>${data.usuario}</strong>.`;
+          setupButtonHoverMessages();
+        } else {
+          localStorage.removeItem("punkuAuthToken");
+          localStorage.removeItem("usuarioActivoPunku");
+          location.href = "login.html";
+        }
+      } catch (err) {
+        console.error(err);
+        location.href = "login.html";
+      }
+    })();
 
     function cerrarSesion() {
+      const token = localStorage.getItem("punkuAuthToken");
+      if (token) {
+        fetch(AUTH_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ accion: "logout", token: token })
+        }).catch(function() {});
+      }
+      localStorage.removeItem("punkuAuthToken");
       localStorage.removeItem("usuarioActivoPunku");
       location.href = "login.html";
     }
