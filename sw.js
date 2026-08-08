@@ -1,5 +1,5 @@
-// sw.js - Versión Autolimpiante v78
-const CACHE_NAME = 'punku-open-v79';
+// sw.js - Versión Autolimpiante v79
+const CACHE_NAME = 'punku-open-v80';
 
 // Instalación inmediata con cacheo de recursos clave
 self.addEventListener('install', event => {
